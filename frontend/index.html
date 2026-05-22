@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Visualisasi 3D interaktif prediksi kelainan kromosom akibat kegagalan meiosis menggunakan simulasi Monte Carlo. Tugas IF3211 Domain-Specific Computation." />
+  <title>MeioVis — Prediksi Aneuploidi Kromosom 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/main.css" />
+</head>
+<body>
+  <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+  <header class="app-header" role="banner">
+    <div class="header-brand">
+      <div class="brand-icon">🧬</div>
+      <div class="brand-text">
+        <span class="brand-name">MeioVis</span>
+        <span class="brand-sub">Chromosome Aneuploidy Predictor</span>
+      </div>
+    </div>
+    <nav class="header-nav" role="navigation">
+      <button class="nav-btn active" id="nav-simulate" data-view="simulate">Simulasi</button>
+      <button class="nav-btn" id="nav-risk" data-view="risk">Kurva Risiko</button>
+      <button class="nav-btn" id="nav-info" data-view="info">Sindrom</button>
+    </nav>
+  </header>
+
+  <!-- ═══════════════════════ MAIN LAYOUT ═══════════════════ -->
+  <main class="app-main" role="main">
+
+    <!-- ──── LEFT: Control Panel ──── -->
+    <aside class="control-panel" aria-label="Panel Kontrol Simulasi">
+      <section class="panel-section" id="section-input">
+        <h2 class="panel-title">⚙️ Parameter Simulasi</h2>
+
+        <!-- Slider Usia -->
+        <div class="input-group">
+          <label class="input-label" for="age-slider">
+            Usia Maternal
+            <span class="input-value" id="age-display">30 tahun</span>
+          </label>
+          <input type="range" id="age-slider" class="slider" min="15" max="50" value="30" step="1" aria-label="Usia maternal" />
+          <div class="slider-marks">
+            <span>15</span><span>25</span><span class="mark-ama">35↑AMA</span><span>45</span><span>50</span>
+          </div>
+        </div>
+
+        <!-- Jumlah Simulasi -->
+        <div class="input-group">
+          <label class="input-label" for="n-sim-select">
+            Jumlah Iterasi
+            <span class="input-hint">lebih banyak = lebih akurat</span>
+          </label>
+          <select id="n-sim-select" class="select-input" aria-label="Jumlah iterasi Monte Carlo">
+            <option value="1000">1.000 (cepat)</option>
+            <option value="5000">5.000</option>
+            <option value="10000" selected>10.000 (rekomendasi)</option>
+            <option value="50000">50.000 (akurat)</option>
+          </select>
+        </div>
+
+        <!-- Target Kromosom -->
+        <div class="input-group">
+          <label class="input-label" for="chr-select">Kromosom Fokus</label>
+          <select id="chr-select" class="select-input" aria-label="Nomor kromosom fokus">
+            <option value="21" selected>Kromosom 21 (Down)</option>
+            <option value="18">Kromosom 18 (Edwards)</option>
+            <option value="13">Kromosom 13 (Patau)</option>
+            <option value="23">Kromosom X/Y (Seks)</option>
+          </select>
+        </div>
+
+        <!-- Tombol Simulasi -->
+        <button class="btn-simulate" id="btn-run" aria-label="Jalankan simulasi Monte Carlo">
+          <span class="btn-icon">▶</span>
+          <span class="btn-text">Jalankan Simulasi</span>
+        </button>
+        <button class="btn-sweep" id="btn-sweep" aria-label="Jalankan analisis sweep usia">
+          📊 Analisis Semua Usia (20–45)
+        </button>
+      </section>
+
+      <!-- Risk Indicator -->
+      <section class="panel-section" id="section-risk-indicator" aria-label="Indikator risiko">
+        <h2 class="panel-title">🔬 Profil Risiko</h2>
+        <div class="risk-card" id="risk-card">
+          <div class="risk-gauge-container">
+            <canvas id="risk-gauge" width="180" height="100" aria-label="Gauge risiko"></canvas>
+          </div>
+          <div class="risk-stats">
+            <div class="stat-row">
+              <span class="stat-label">Risiko Total</span>
+              <span class="stat-value" id="stat-total-risk">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Meiosis I</span>
+              <span class="stat-value" id="stat-mi-risk">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Meiosis II</span>
+              <span class="stat-value" id="stat-mii-risk">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Kategori</span>
+              <span class="stat-value risk-badge" id="stat-category">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Rasio vs 25th</span>
+              <span class="stat-value" id="stat-ratio">—</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulation Results -->
+      <section class="panel-section" id="section-results" style="display:none" aria-label="Hasil simulasi">
+        <h2 class="panel-title">📈 Hasil Monte Carlo</h2>
+        <div class="result-stats">
+          <div class="stat-card">
+            <span class="stat-card-value" id="res-aneuploid">—</span>
+            <span class="stat-card-label">Gamet Aneuploid</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-value" id="res-observed">—</span>
+            <span class="stat-card-label">Risiko Observasi</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-value" id="res-nd-mi">—</span>
+            <span class="stat-card-label">ND Meiosis I</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-value" id="res-nd-mii">—</span>
+            <span class="stat-card-label">ND Meiosis II</span>
+          </div>
+        </div>
+        <div class="syndrome-box" id="syndrome-box" aria-live="polite"></div>
+      </section>
+    </aside>
+
+    <!-- ──── CENTER: Three.js Viewport ──── -->
+    <section class="viewport-container" aria-label="Visualisasi 3D meiosis">
+      <div id="three-canvas-wrapper">
+        <canvas id="three-canvas" aria-label="Animasi 3D proses meiosis"></canvas>
+        <div class="canvas-overlay" id="canvas-overlay">
+          <p class="overlay-hint">Atur parameter di panel kiri, lalu klik <strong>Jalankan Simulasi</strong></p>
+        </div>
+      </div>
+
+      <!-- Stage Labels -->
+      <div class="stage-bar" id="stage-bar" aria-label="Fase meiosis saat ini">
+        <div class="stage-chip" id="chip-interphase">Interfase</div>
+        <div class="stage-chip" id="chip-prophase">Profase I</div>
+        <div class="stage-chip" id="chip-metaphase">Metafase I</div>
+        <div class="stage-chip" id="chip-anaphase">Anafase I</div>
+        <div class="stage-chip" id="chip-meiosis2">Meiosis II</div>
+        <div class="stage-chip" id="chip-gametes">Gamet</div>
+      </div>
+
+      <!-- 3D Controls hint -->
+      <div class="controls-hint">
+        <span>🖱️ Drag: Putar</span>
+        <span>🖱️ Scroll: Zoom</span>
+        <span>⌨️ Space: Pause/Play</span>
+      </div>
+    </section>
+
+    <!-- ──── RIGHT: Chart Panel ──── -->
+    <aside class="chart-panel" aria-label="Panel grafik">
+      <section class="panel-section">
+        <h2 class="panel-title">📉 Kurva Risiko</h2>
+        <canvas id="risk-chart" aria-label="Grafik kurva risiko vs usia"></canvas>
+      </section>
+      <section class="panel-section" style="margin-top: 1rem;">
+        <h2 class="panel-title">🥧 Distribusi ND</h2>
+        <canvas id="nd-pie-chart" aria-label="Pie chart distribusi non-disjunction"></canvas>
+      </section>
+    </aside>
+  </main>
+
+  <!-- ═══════════════════════ LOADING OVERLAY ═════════════ -->
+  <div class="loading-overlay" id="loading-overlay" aria-live="assertive" aria-hidden="true">
+    <div class="loading-spinner"></div>
+    <p class="loading-text" id="loading-text">Menjalankan simulasi Monte Carlo…</p>
+  </div>
+
+  <!-- ═══════════════════════ TOAST ═══════════════════════ -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

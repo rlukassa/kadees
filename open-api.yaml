@@ -1,0 +1,346 @@
+openapi: 3.0.3
+info:
+	title: Chromosome Aneuploidy Predictor API
+	description: |
+		API untuk prediksi aneuploidi kromosom dan akses dataset maternal-age.
+		Menyediakan endpoint model risiko, simulasi Monte Carlo, dan akses dataset mentah.
+	version: "1.0.0"
+servers:
+	- url: http://127.0.0.1:8000
+		description: Local development server
+
+paths:
+	/:
+		get:
+			summary: Pemeriksaan kesehatan aplikasi (health check)
+			responses:
+				'200':
+					description: Berhasil (server hidup)
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									status:
+										type: string
+									message:
+										type: string
+
+	/api/risk/{maternal_age}:
+		get:
+			summary: Ambil profil risiko untuk satu usia maternal
+			parameters:
+				- name: maternal_age
+					in: path
+					required: true
+					schema:
+						type: integer
+						minimum: 15
+						maximum: 50
+			responses:
+				'200':
+					description: Profil risiko
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/RiskProfile'
+				'400':
+					description: Parameter usia tidak valid
+
+	/api/risk/curve:
+		get:
+			summary: Dapatkan kurva risiko untuk rentang usia maternal
+			parameters:
+				- name: age_min
+					in: query
+					schema:
+						type: integer
+						minimum: 15
+						maximum: 49
+					required: true
+				- name: age_max
+					in: query
+					schema:
+						type: integer
+						minimum: 16
+						maximum: 50
+					required: true
+			responses:
+				'200':
+					description: Kurva risiko
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									curve:
+										type: array
+										items:
+											$ref: '#/components/schemas/RiskCurvePoint'
+									total_points:
+										type: integer
+
+	/api/risk/compare:
+		get:
+			summary: Bandingkan risiko antara dua usia maternal
+			parameters:
+				- name: age_a
+					in: query
+					required: true
+					schema:
+						type: integer
+						minimum: 15
+						maximum: 50
+				- name: age_b
+					in: query
+					required: true
+					schema:
+						type: integer
+						minimum: 15
+						maximum: 50
+			responses:
+				'200':
+					description: Hasil perbandingan (format sesuai aplikasi)
+					content:
+						application/json:
+							schema:
+								type: object
+
+	/api/simulate:
+		post:
+			summary: Jalankan simulasi Monte Carlo
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							$ref: '#/components/schemas/SimulationRequest'
+			responses:
+				'200':
+					description: Hasil simulasi
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/SimulationResult'
+				'400':
+					description: Permintaan tidak valid
+
+	/api/simulate/sweep:
+		get:
+			summary: Jalankan simulasi untuk rentang usia (sweep)
+			parameters:
+				- name: age_min
+					in: query
+					schema:
+						type: integer
+						minimum: 15
+						maximum: 49
+					required: false
+					example: 20
+				- name: age_max
+					in: query
+					schema:
+						type: integer
+						minimum: 16
+						maximum: 50
+					required: false
+					example: 45
+				- name: n_sim
+					in: query
+					schema:
+						type: integer
+						minimum: 100
+						maximum: 10000
+					required: false
+					example: 1000
+			responses:
+				'200':
+					description: Hasil sweep
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									sweep:
+										type: array
+										items:
+											type: object
+									total_ages:
+										type: integer
+
+	/api/data/maternal-age:
+		get:
+			summary: Kembalikan baris dari `maternal_age_risk.csv`
+			parameters:
+				- name: limit
+					in: query
+					schema:
+						type: integer
+						minimum: 1
+					description: Limit number of rows returned for preview
+			responses:
+				'200':
+					description: Baris dikembalikan
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									count:
+										type: integer
+									rows_returned:
+										type: integer
+									rows:
+										type: array
+										items:
+											$ref: '#/components/schemas/MaternalAgeRow'
+				'500':
+					description: File tidak ditemukan atau kesalahan internal
+
+	/api/data/maternal-age/{patient_id}:
+		get:
+			summary: Kembalikan satu baris `maternal_age` berdasarkan `patient_id`
+			parameters:
+				- name: patient_id
+					in: path
+					required: true
+					schema:
+						type: string
+			responses:
+				'200':
+					description: Baris tunggal
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/MaternalAgeRow'
+				'404':
+					description: `patient_id` tidak ditemukan
+				'500':
+					description: File tidak ditemukan atau kesalahan internal
+
+	/api/data/syndromes:
+		get:
+			summary: Kembalikan tabel referensi sindrom kromosom
+			responses:
+				'200':
+					description: Daftar sindrom
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									count:
+										type: integer
+									syndromes:
+										type: array
+										items:
+											$ref: '#/components/schemas/Syndrome'
+				'500':
+					description: File tidak ditemukan atau kesalahan internal
+
+components:
+	schemas:
+		SimulationRequest:
+			type: object
+			required: [maternal_age]
+			properties:
+				maternal_age:
+					type: integer
+					minimum: 15
+					maximum: 50
+				n_simulations:
+					type: integer
+					default: 10000
+				target_chromosome:
+					type: integer
+					default: 21
+				random_seed:
+					type: integer
+					nullable: true
+
+		SimulationResult:
+			type: object
+			properties:
+				summary:
+					type: object
+				samples:
+					type: array
+					items:
+						type: object
+
+		RiskProfile:
+			type: object
+			properties:
+				maternal_age:
+					type: integer
+				total_risk:
+					type: number
+				risk_by_stage:
+					type: object
+				category:
+					type: string
+
+		RiskCurvePoint:
+			type: object
+			properties:
+				age:
+					type: integer
+				all_trisomy_risk:
+					type: number
+
+		MaternalAgeRow:
+			type: object
+			properties:
+				patient_id:
+					type: string
+				maternal_age:
+					type: number
+				maternal_age_group:
+					type: string
+				gestational_week:
+					type: number
+				gravida:
+					type: string
+				parity:
+					type: string
+				bmi:
+					type: string
+				ethnicity:
+					type: string
+				test_method:
+					type: string
+				trisomy_21_risk:
+					type: number
+				trisomy_18_risk:
+					type: number
+				trisomy_13_risk:
+					type: number
+				all_trisomy_risk:
+					type: number
+				monosomy_x_risk:
+					type: number
+				aneuploidy_detected:
+					type: string
+				chromosome_affected:
+					type: string
+				meiosis_failure_stage:
+					type: string
+				syndrome_name:
+					type: string
+				karyotype_result:
+					type: string
+				source:
+					type: string
+
+		Syndrome:
+			type: object
+			additionalProperties: true
+
+tags:
+	- name: Data
+		description: Endpoints to access raw/curated datasets
+	- name: Risk Model
+		description: Risk model endpoints
+	- name: Simulation
+		description: Monte Carlo simulation endpoints
+

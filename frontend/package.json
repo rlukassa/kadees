@@ -1,0 +1,20 @@
+{
+  "name": "chromosome-aneuploidy-visualizer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "3D visualization of meiosis non-disjunction using Three.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.165.0",
+    "gsap": "^3.12.5",
+    "chart.js": "^4.4.3"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0"
+  }
+}
