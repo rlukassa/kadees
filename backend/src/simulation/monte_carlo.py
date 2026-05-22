@@ -1,18 +1,3 @@
-"""
-monte_carlo.py
-==============
-Modul inti simulasi Monte Carlo untuk memprediksi peluang terjadinya
-non-disjunction selama proses meiosis, berdasarkan usia maternal.
-
-Algoritma:
-1. Untuk setiap iterasi (run), bangkitkan 23 pasang kromosom (diploid).
-2. Untuk tiap pasang, ambil probabilitas non-disjunction dari RiskModel.
-3. Roll dice → jika random() < probabilitas → tandai pasang itu sebagai ND.
-4. Tentukan apakah ND di Meiosis I atau Meiosis II.
-5. Bentuk gamet (haploid) dari hasil meiosis.
-6. Catat statistik dan kembalikan ringkasan.
-"""
-
 import random
 import time
 from dataclasses import dataclass, field
@@ -25,16 +10,6 @@ from ..simulation.statistics import SimulationStatisticsAnalyzer
 
 @dataclass
 class SimulationConfig:
-    """
-    Konfigurasi parameter simulasi Monte Carlo.
-
-    Attributes:
-        maternal_age        (int)       : Usia ibu yang disimulasikan.
-        n_simulations       (int)       : Jumlah iterasi simulasi (default: 10.000).
-        target_chromosome   (int)       : Nomor kromosom yang difokuskan (default: 21 = Down syndrome).
-        gamete_sex          (GameteSex) : Jenis gamet yang disimulasikan (default: EGG).
-        random_seed         (Optional[int]) : Seed RNG untuk reprodusibilitas.
-    """
     maternalAge: int = 30
     nSimulations: int = 10_000
     targetChromosome: int = 21
@@ -44,22 +19,6 @@ class SimulationConfig:
 
 @dataclass
 class SimulationResult:
-    """
-    Hasil agregat dari satu run simulasi Monte Carlo.
-
-    Attributes:
-        config              (SimulationConfig) : Konfigurasi yang digunakan.
-        total_runs          (int)    : Total iterasi berhasil dijalankan.
-        aneuploid_count     (int)    : Jumlah gamet aneuploid yang dihasilkan.
-        normal_count        (int)    : Jumlah gamet normal.
-        observed_risk       (float)  : Risiko empiris dari simulasi (aneuploid / total).
-        model_risk          (float)  : Risiko teoritis dari model probabilistik.
-        nd_meiosis_I_count  (int)    : Jumlah ND yang terjadi di Meiosis I.
-        nd_meiosis_II_count (int)    : Jumlah ND yang terjadi di Meiosis II.
-        syndrome_counts     (Dict)   : Distribusi sindrom yang diprediksi.
-        execution_time_ms   (float)  : Waktu eksekusi simulasi dalam milidetik.
-        sample_gametes      (List[Gamete]) : Sampel gamet aneuploid (maks 5 untuk visualisasi).
-    """
     config: SimulationConfig
     totalRuns: int = 0
     aneuploidCount: int = 0
@@ -73,13 +32,6 @@ class SimulationResult:
     sampleGametes: List[Gamete] = field(default_factory=list)
 
     def toDict(self) -> dict:
-        """
-        def toDict() -> dict :
-        // Mengonversi SimulationResult menjadi dictionary JSON-serializable (camelCase).
-        // param: tidak ada
-        // output: dict lengkap hasil simulasi termasuk Wilson CI dan validasi model.
-        // dipakai untuk: API response /api/simulate dan payload ke frontend Three.js.
-        """
         analyzer = SimulationStatisticsAnalyzer([])
         wilsonCI = analyzer.wilsonConfidenceInterval(
             successes=self.aneuploidCount, n=self.totalRuns, confidence=0.95
@@ -117,44 +69,17 @@ class SimulationResult:
 
 
 class MeiosisMonteCarloSimulator:
-    """
-    Simulator Monte Carlo untuk proses meiosis pada sel telur manusia.
-
-    Kelas ini mensimulasikan pemisahan kromosom selama meiosis dan mencatat
-    berapa banyak gamet aneuploid yang terbentuk berdasarkan probabilitas
-    non-disjunction dari model usia maternal.
-
-    Workflow:
-        1. Inisialisasi dengan konfigurasi simulasi.
-        2. Panggil run() untuk menjalankan simulasi.
-        3. Ambil hasilnya dari SimulationResult.
-    """
 
     # Kromosom seks default untuk sel telur (XX) — ovum selalu punya X
     DEFAULT_SEX_CHROMOSOME: ChromosomeType = ChromosomeType.SEX_X
 
     def __init__(self, config: SimulationConfig, riskModel: MaternalAgeRiskModel = None):
-        """
-        def __init__(config: SimulationConfig, riskModel: MaternalAgeRiskModel = None) :
-        // Inisialisasi simulator dengan konfigurasi dan model risiko.
-        // param config: objek SimulationConfig berisi parameter simulasi.
-        // param riskModel: model risiko opsional; default MaternalAgeRiskModel().
-        // output: None.
-        // dipakai untuk: membuat instance simulator sebelum memanggil run().
-        """
         self.config = config
         self.riskModel = riskModel or MaternalAgeRiskModel()
         self._rng = random.Random(config.randomSeed)
         self._riskProfile = self.riskModel.getRiskProfile(config.maternalAge)
 
     def _createDiploidCell(self) -> List[ChromosomePair]:
-        """
-        def _createDiploidCell() -> List[ChromosomePair] :
-        // Membuat set lengkap 23 pasang kromosom diploid (46 kromosom total) sebagai sel induk meiosis.
-        // param: tidak ada
-        // output: list 23 ChromosomePair (autosom 1-22 + satu pasang kromosom seks).
-        // dipakai untuk: langkah awal setiap iterasi simulasi.
-        """
         pairs = []
         for i in range(1, 23):  # Autosom 1–22
             paternal = Chromosome(number=i, chrType=ChromosomeType.AUTOSOME,
@@ -171,14 +96,6 @@ class MeiosisMonteCarloSimulator:
         return pairs
 
     def _simulateMeiosis(self, pairs: List[ChromosomePair]) -> Gamete:
-        """
-        def _simulateMeiosis(pairs: List[ChromosomePair]) -> Gamete :
-        // Mensimulasikan proses meiosis dari satu sel diploid menjadi satu gamet haploid.
-        // Untuk setiap pasang kromosom, tentukan apakah non-disjunction terjadi.
-        // param pairs: list 23 ChromosomePair (sel induk diploid).
-        // output: objek Gamete haploid hasil meiosis (bisa normal atau aneuploid).
-        // dipakai untuk: inti loop iterasi Monte Carlo.
-        """
         gameteChromosomes = []
         ndMeiosisI = False
         ndMeiosisII = False
@@ -220,13 +137,6 @@ class MeiosisMonteCarloSimulator:
         ), ndMeiosisI, ndMeiosisII
 
     def run(self) -> SimulationResult:
-        """
-        def run() -> SimulationResult :
-        // Menjalankan keseluruhan simulasi Monte Carlo sejumlah nSimulations iterasi.
-        // param: tidak ada (menggunakan self.config).
-        // output: objek SimulationResult berisi statistik agregat dan sampel gamet.
-        // dipakai untuk: endpoint utama API /api/simulate.
-        """
         startTime = time.perf_counter()
 
         result = SimulationResult(config=self.config)
@@ -270,13 +180,6 @@ class MeiosisMonteCarloSimulator:
         return result
 
     def runAgeSweep(self, ageRange: Tuple[int, int] = (20, 45)) -> List[Dict]:
-        """
-        def runAgeSweep(ageRange: Tuple[int, int] = (20, 45)) -> List[Dict] :
-        // Menjalankan simulasi untuk rentang usia maternal dan menghasilkan data perbandingan.
-        // param ageRange: tuple (usia_awal, usia_akhir) rentang yang disimulasikan.
-        // output: list of dict, setiap dict berisi ringkasan hasil simulasi per usia.
-        // dipakai untuk: mengisi data grafik garis "Risiko vs Usia" di frontend dashboard.
-        """
         results = []
         for age in range(ageRange[0], ageRange[1] + 1):
             cfg = SimulationConfig(
