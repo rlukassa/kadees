@@ -1,49 +1,34 @@
-/**
- * MeiosisScene.js — Three.js 3D Scene untuk Visualisasi Meiosis
- * ==============================================================
- * Kelas utama yang mengelola seluruh siklus animasi Three.js:
- *   - Sel induk diploid dengan 23 pasang kromosom 3D
- *   - Animasi benang spindle dan pemisahan kromosom
- *   - Efek non-disjunction (gagal pisah) merah berdenyut
- *   - Gamet hasil meiosis (normal / aneuploid)
- *
- * Teknologi: Three.js r165, GSAP 3 (animasi), OrbitControls
- */
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import gsap from 'gsap';
 
-// ── Warna Tema ───────────────────────────────────────────────
+// warna-warna utama yang dipakai untuk visualisasi
 const COLORS = {
-  bg:             0x07080f,
-  chrNormal:      0x00d4ff,   // Cyan — kromosom normal
-  chrNd:          0xff4757,   // Merah — non-disjunction
-  chrNdMII:       0xff9f43,   // Oranye — ND Meiosis II
-  spindle:        0x7c3aed,   // Ungu — benang spindle
-  spindleNd:      0xff4757,   // Merah — spindle gagal
-  cellMembrane:   0x1a2035,
-  nucleus:        0x0d1530,
-  particle:       0x00d4ff,
-  gamet:          0x2ed573,   // Hijau — gamet normal
-  gametNd:        0xff4757,   // Merah — gamet aneuploid
+  bg:           0x07080f,
+  chrNormal:    0x00d4ff,
+  chrNd:        0xff4757,   // merah — kromosom non-target yang ND
+  chrNdTarget:  0xff9500,   // oranye — kromosom TARGET yang ND
+  chrNdMII:     0xff9f43,
+  spindle:      0x7c3aed,
+  spindleNd:    0xff4757,
+  spindleNdTarget: 0xff9500,
+  cellMembrane: 0x1a2035,
+  nucleus:      0x0d1530,
+  particle:     0x00d4ff,
+  gamet:        0x2ed573,
+  gametNd:      0xff4757,
+  gametNdTarget: 0xff9500,
 };
 
 export class MeiosisScene {
-  /**
-   * constructor(canvasEl)
-   * // Inisialisasi Three.js renderer, scene, camera, dan controls.
-   * // param canvasEl: HTMLCanvasElement target canvas.
-   * // output: None.
-   * // dipakai untuk: new MeiosisScene(document.getElementById('three-canvas')).
-   */
   constructor(canvasEl) {
     this.canvas = canvasEl;
     this.animating = false;
     this.paused = false;
-    this._objects = [];       // Semua mesh yang bisa di-dispose
-    this._timeline = null;    // GSAP Timeline aktif
-    this._onStageChange = null; // Callback untuk update UI stage bar
+    this._objects = [];
+    this._timeline = null;
+    this._onStageChange = null;
+    this._lastSimData = null;
 
     this._initRenderer();
     this._initScene();
@@ -55,17 +40,7 @@ export class MeiosisScene {
     this._handleResize();
   }
 
-  // ──────────────────────────────────────────────────────────
-  // INIT METHODS
-  // ──────────────────────────────────────────────────────────
-
-  /**
-   * _initRenderer()
-   * // Mengkonfigurasi WebGLRenderer dengan antialiasing dan tone mapping.
-   * // param: tidak ada.
-   * // output: None. Menetapkan this.renderer.
-   * // dipakai untuk: langkah pertama konstruktor.
-   */
+  // setup renderer untuk Three.js
   _initRenderer() {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -79,47 +54,26 @@ export class MeiosisScene {
     this.renderer.setClearColor(COLORS.bg, 1);
   }
 
-  /**
-   * _initScene()
-   * // Membuat THREE.Scene dan menambahkan fog ambient.
-   * // param: tidak ada.
-   * // output: None. Menetapkan this.scene.
-   * // dipakai untuk: langkah kedua konstruktor.
-   */
+   // untuk membuat scene utama
   _initScene() {
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(COLORS.bg, 0.035);
   }
 
-  /**
-   * _initCamera()
-   * // Membuat PerspectiveCamera dengan posisi default.
-   * // param: tidak ada.
-   * // output: None. Menetapkan this.camera.
-   * // dipakai untuk: langkah ketiga konstruktor.
-   */
+  // setup kamera
   _initCamera() {
     const aspect = this.canvas.clientWidth / this.canvas.clientHeight;
     this.camera = new THREE.PerspectiveCamera(50, aspect, 0.1, 500);
     this.camera.position.set(0, 0, 20);
   }
 
-  /**
-   * _initLights()
-   * // Menambahkan ambient + directional + point lights ke scene.
-   * // param: tidak ada.
-   * // output: None.
-   * // dipakai untuk: memberikan depth dan nuansa neon ke objek 3D.
-   */
   _initLights() {
-    const ambient = new THREE.AmbientLight(0xffffff, 0.3);
-    this.scene.add(ambient);
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
     const dir = new THREE.DirectionalLight(0xffffff, 0.8);
     dir.position.set(10, 20, 15);
     this.scene.add(dir);
 
-    // Point lights berwarna neon
     const bluePoint = new THREE.PointLight(COLORS.chrNormal, 2, 40);
     bluePoint.position.set(-8, 5, 0);
     this.scene.add(bluePoint);
@@ -129,13 +83,7 @@ export class MeiosisScene {
     this.scene.add(purplePoint);
   }
 
-  /**
-   * _initControls()
-   * // Menginisialisasi OrbitControls untuk interaksi mouse (drag, scroll, pan).
-   * // param: tidak ada.
-   * // output: None. Menetapkan this.controls.
-   * // dipakai untuk: memungkinkan user memutar dan memperbesar/kecil scene 3D.
-   */
+  // orbit control agar kamera bisa diputar user
   _initControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
@@ -146,13 +94,6 @@ export class MeiosisScene {
     this.controls.autoRotateSpeed = 0.3;
   }
 
-  /**
-   * _initParticles()
-   * // Membuat field partikel background (efek kosmik / DNA floating particles).
-   * // param: tidak ada.
-   * // output: None. Menambahkan Points ke this.scene.
-   * // dipakai untuk: estetika background agar terkesan seperti lingkungan biologis.
-   */
   _initParticles() {
     const count = 1200;
     const positions = new Float32Array(count * 3);
@@ -173,17 +114,7 @@ export class MeiosisScene {
     this.scene.add(new THREE.Points(geo, mat));
   }
 
-  // ──────────────────────────────────────────────────────────
-  // RENDER LOOP
-  // ──────────────────────────────────────────────────────────
-
-  /**
-   * _startRenderLoop()
-   * // Memulai requestAnimationFrame loop untuk rendering kontinu.
-   * // param: tidak ada.
-   * // output: None.
-   * // dipakai untuk: animasi real-time Three.js.
-   */
+  // untuk render loop utama
   _startRenderLoop() {
     const animate = () => {
       requestAnimationFrame(animate);
@@ -195,19 +126,7 @@ export class MeiosisScene {
     animate();
   }
 
-  // ──────────────────────────────────────────────────────────
-  // SCENE BUILDING
-  // ──────────────────────────────────────────────────────────
-
-  /**
-   * _makeCellMembrane(radius, color, opacity)
-   * // Membuat mesh bola transparan sebagai membran sel.
-   * // param radius: float radius bola.
-   * // param color: hex warna membran.
-   * // param opacity: float transparansi (0–1).
-   * // output: THREE.Mesh membran sel.
-   * // dipakai untuk: membuat representasi visual sel induk dan sel anak.
-   */
+  // untuk membuat membran sel
   _makeCellMembrane(radius = 7, color = COLORS.cellMembrane, opacity = 0.25) {
     const geo = new THREE.SphereGeometry(radius, 32, 32);
     const mat = new THREE.MeshPhongMaterial({
@@ -215,22 +134,13 @@ export class MeiosisScene {
       transparent: true,
       opacity,
       side: THREE.FrontSide,
-      wireframe: false,
     });
     const mesh = new THREE.Mesh(geo, mat);
     this._objects.push(mesh);
     return mesh;
   }
 
-  /**
-   * _makeChromosome(color, length, ndEffect)
-   * // Membuat mesh kapsul/silinder yang merepresentasikan satu kromosom.
-   * // param color: hex warna kromosom.
-   * // param length: float panjang kromosom.
-   * // param ndEffect: boolean, jika true tambahkan efek glow merah ND.
-   * // output: THREE.Group berisi mesh kromosom + glow.
-   * // dipakai untuk: membangun representasi 23 pasang kromosom dalam sel.
-   */
+  // untuk membuat kromosom
   _makeChromosome(color = COLORS.chrNormal, length = 1.2, ndEffect = false) {
     const group = new THREE.Group();
 
@@ -241,10 +151,9 @@ export class MeiosisScene {
       emissiveIntensity: ndEffect ? 0.6 : 0.2,
       shininess: 80,
     });
-    const mesh = new THREE.Mesh(geo, mat);
-    group.add(mesh);
+    group.add(new THREE.Mesh(geo, mat));
 
-    // Glow aura untuk kromosom ND
+    // glow aura khusus kromosom yang mengalami non-disjunction
     if (ndEffect) {
       const glowGeo = new THREE.CapsuleGeometry(0.22, length + 0.1, 8, 16);
       const glowMat = new THREE.MeshBasicMaterial({
@@ -260,15 +169,7 @@ export class MeiosisScene {
     return group;
   }
 
-  /**
-   * _makeSpindleFiber(from, to, color)
-   * // Membuat silinder tipis yang merepresentasikan satu benang spindle.
-   * // param from: THREE.Vector3 titik awal (sentromer kromosom).
-   * // param to: THREE.Vector3 titik akhir (kutub sel / kinetochor).
-   * // param color: hex warna benang.
-   * // output: THREE.Mesh silinder spindle.
-   * // dipakai untuk: visualisasi benang spindel saat metafase/anafase.
-   */
+  // membuat spindle fiber antar kutub sel
   _makeSpindleFiber(from, to, color = COLORS.spindle) {
     const dir = new THREE.Vector3().subVectors(to, from);
     const len = dir.length();
@@ -278,53 +179,57 @@ export class MeiosisScene {
     const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.6 });
     const mesh = new THREE.Mesh(geo, mat);
 
-    // Orientasikan silinder agar mengarah dari from ke to
     mesh.position.copy(mid);
-    mesh.quaternion.setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0),
-      dir.normalize()
-    );
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
+
     this._objects.push(mesh);
     return mesh;
   }
 
-  // ──────────────────────────────────────────────────────────
-  // PUBLIC: PLAY ANIMATION
-  // ──────────────────────────────────────────────────────────
-
-  /**
-   * playSingleSimulation(simulationData)
-   * // Menjalankan animasi GSAP lengkap berdasarkan data simulasi dari API.
-   * // Animasi mencakup: interfase → profase → metafase → anafase → gamet.
-   * // Jika ada ND, animasi spindel gagal ditampilkan dengan efek berdenyut merah.
-   * // param simulationData: object SimulationResult dari API /api/simulate.
-   * // output: None. Memulai GSAP timeline animasi.
-   * // dipakai untuk: dipanggil setelah respons API berhasil diterima.
-   */
+  // untuk menjalankan simulasi meiosis
   playSingleSimulation(simulationData) {
+    this._lastSimData = simulationData;
     this._clearScene();
     this.controls.autoRotate = false;
 
-    const hasND = simulationData.results.aneuploid_count > 0;
-    const sampleGamete = simulationData.sample_gametes?.[0];
-    const ndChromosomes = sampleGamete?.affected_chromosomes || [];
+    const hasND      = simulationData.results.aneuploid_count > 0;
+    const targetChr  = simulationData.config?.target_chromosome ?? 21;
+    const allSamples = simulationData.sample_gametes || [];
 
-    // ── Buat sel induk ─────────────────────────────────────
+    // simpan kromosom yang mengalami non-disjunction
+    const ndSet    = new Set(); // nomor kromosom yang mengalami ND
+    const ndMIISet = new Set(); // subset yang ND di Meiosis II
+    allSamples.forEach(g => {
+      (g.affected_chromosomes || []).forEach(c => {
+        ndSet.add(c.number);
+        if (c.state === 'nd_mII') ndMIISet.add(c.number);
+      });
+    });
+
     const cellGroup = new THREE.Group();
     this.scene.add(cellGroup);
 
     const membrane = this._makeCellMembrane(6.5, COLORS.cellMembrane, 0.2);
     cellGroup.add(membrane);
 
-    // ── Buat 23 kromosom mini melingkar di dalam sel ────────
+    // membuat 23 kromosom
     const chrGroups = [];
     for (let i = 0; i < 23; i++) {
-      const angle = (i / 23) * Math.PI * 2;
-      const r = 3.5;
-      const isNd = ndChromosomes.some(c => c.number === (i + 1));
-      const color = isNd ? COLORS.chrNd : COLORS.chrNormal;
+      const chrNum = i + 1;
+      const angle  = (i / 23) * Math.PI * 2;
+      const r      = 3.5;
+      const isNd       = ndSet.has(chrNum);
+      const isTarget   = chrNum === targetChr;
+      const isMII      = ndMIISet.has(chrNum);
 
-      const chrG = this._makeChromosome(color, 0.9, isNd);
+      // Warna: target ND = oranye, non-target MI ND = merah, MII ND = kuning-oranye, normal = biru
+      let color;
+      if (isNd && isTarget)  color = COLORS.chrNdTarget;
+      else if (isNd && isMII) color = COLORS.chrNdMII;
+      else if (isNd)         color = COLORS.chrNd;
+      else                   color = COLORS.chrNormal;
+
+      const chrG = this._makeChromosome(color, isTarget ? 1.1 : 0.9, isNd);
       chrG.position.set(
         Math.cos(angle) * r,
         Math.sin(angle) * r * 0.6,
@@ -335,101 +240,118 @@ export class MeiosisScene {
       chrGroups.push(chrG);
     }
 
-    // ── Spindle fibers ke dua kutub ────────────────────────
-    const poleTop = new THREE.Vector3(0, 6, 0);
+    const poleTop    = new THREE.Vector3(0,  6, 0);
     const poleBottom = new THREE.Vector3(0, -6, 0);
     const spindleGroup = new THREE.Group();
     spindleGroup.visible = false;
     this.scene.add(spindleGroup);
 
-    chrGroups.forEach((cg) => {
-      const isNd = ndChromosomes.some((_, idx) => idx < 3 && cg === chrGroups[idx]);
-      const fiberColor = isNd ? COLORS.spindleNd : COLORS.spindle;
-      const f1 = this._makeSpindleFiber(cg.position, poleTop, fiberColor);
-      const f2 = this._makeSpindleFiber(cg.position, poleBottom, fiberColor);
-      spindleGroup.add(f1, f2);
+    chrGroups.forEach((cg, cgIdx) => {
+      const chrNum   = cgIdx + 1;
+      const isNd     = ndSet.has(chrNum);
+      const isTarget = chrNum === targetChr;
+      const fiberColor = isNd
+        ? (isTarget ? COLORS.spindleNdTarget : COLORS.spindleNd)
+        : COLORS.spindle;
+      spindleGroup.add(
+        this._makeSpindleFiber(cg.position, poleTop, fiberColor),
+        this._makeSpindleFiber(cg.position, poleBottom, fiberColor)
+      );
     });
 
-    // ── GSAP Timeline Animasi ──────────────────────────────
     const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' } });
     this._timeline = tl;
 
-    // [0] Interfase — sel tampak normal, kromosom melingkar
+     // interfase
+    tl.addLabel('interphase');
     tl.call(() => this._setStage('interphase'));
 
-    // [1] Profase — kromosom memadat, bergerak ke tengah
-    tl.call(() => this._setStage('prophase'), null, '+=1.5');
-    tl.to(cellGroup.rotation, { y: Math.PI * 0.5, duration: 2 }, '-=0');
+    // profase
+    tl.addLabel('prophase', '+=1.5');
+    tl.call(() => this._setStage('prophase'), null, 'prophase');
+    tl.to(cellGroup.rotation, { y: Math.PI * 0.5, duration: 2 }, 'prophase');
 
-    // [2] Metafase — spindle muncul, kromosom berbaris di ekuator
+    // metafase
+    tl.addLabel('metaphase', '+=0.8');
     tl.call(() => {
       this._setStage('metaphase');
       spindleGroup.visible = true;
-    }, null, '+=0.8');
-    chrGroups.forEach((cg, i) => {
+    }, null, 'metaphase');
+    chrGroups.forEach((cg) => {
       tl.to(cg.position, {
         x: (Math.random() - 0.5) * 1.5,
         y: (Math.random() - 0.5) * 0.4,
         z: (Math.random() - 0.5) * 1.5,
         duration: 1.2,
-      }, '<0.05');
+      }, 'metaphase+=0.05');
     });
 
-    // [3] Anafase — kromosom berpisah ke dua kutub
-    tl.call(() => this._setStage('anaphase'), null, '+=0.5');
+    // anafase
+    tl.addLabel('anaphase', '+=0.5');
+    tl.call(() => this._setStage('anaphase'), null, 'anaphase');
     chrGroups.forEach((cg, i) => {
-      const isNd = ndChromosomes.some(c => c.number === (i + 1));
+      const chrNum = i + 1;
+      const isNd   = ndSet.has(chrNum) && hasND;
       const targetY = (i % 2 === 0) ? 4.5 : -4.5;
 
-      if (isNd && hasND) {
-        // ND: kromosom tidak bergerak ke kutub — tetap di tengah
-        tl.to(cg.position, { y: (Math.random() - 0.5) * 0.5, duration: 1.5 }, '<0.03');
-        // Tambah efek pulse merah
-        tl.to(cg.children[0].material, { emissiveIntensity: 1.0, duration: 0.3, yoyo: true, repeat: 4 }, '<');
+      if (isNd) {
+        tl.to(cg.position, { y: (Math.random() - 0.5) * 0.5, duration: 1.5 }, 'anaphase+=0.03');
+        tl.to(cg.children[0].material, {
+          emissiveIntensity: 1.0, duration: 0.3, yoyo: true,
+          repeat: chrNum === targetChr ? 8 : 4,
+        }, 'anaphase');
       } else {
-        tl.to(cg.position, { y: targetY, duration: 1.5 }, '<0.03');
+        tl.to(cg.position, { y: targetY, duration: 1.5 }, 'anaphase+=0.03');
       }
     });
 
-    // [4] Meiosis II — sel membelah
-    tl.call(() => this._setStage('meiosis2'), null, '+=0.3');
-    tl.to(membrane.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 1.0 });
+     // Meiosis II
+    tl.addLabel('meiosis2', '+=0.3');
+    tl.call(() => this._setStage('meiosis2'), null, 'meiosis2');
+    tl.to(membrane.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 1.0 }, 'meiosis2');
 
-    // [5] Tampilkan gamet hasil
+    // pembentukan gamete
+    tl.addLabel('gametes', '+=0.5');
     tl.call(() => {
       this._setStage('gametes');
       spindleGroup.visible = false;
-      this._showGametes(simulationData, hasND);
-    }, null, '+=0.5');
+      this._showGametes(simulationData);
+    }, null, 'gametes');
 
     tl.call(() => { this.controls.autoRotate = true; }, null, '+=1');
   }
 
-  /**
-   * _showGametes(simData, hasND)
-   * // Membuat representasi visual gamet hasil meiosis di scene.
-   * // param simData: object data simulasi dari API.
-   * // param hasND: boolean, apakah ada non-disjunction.
-   * // output: None. Menambahkan mesh gamet ke scene.
-   * // dipakai untuk: dipanggil pada akhir timeline animasi meiosis.
-   */
-  _showGametes(simData, hasND) {
+  // menampilkan gamete hasil meiosis
+  _showGametes(simData) {
     this._clearScene();
-    const total = simData.results.total_runs;
-    const aneuploidCount = simData.results.aneuploid_count;
-    const normalCount = simData.results.normal_count;
+    const targetChr    = simData.config?.target_chromosome ?? 21;
+    const sampleGametes = simData.sample_gametes || [];
+    const aneuploidItems = sampleGametes.map(g => ({ isAneuploid: true, gamete: g }));
+    const normalCount    = Math.max(1, 8 - aneuploidItems.length);
+    const items = [
+      ...aneuploidItems,
+      ...Array.from({ length: normalCount }, () => ({ isAneuploid: false, gamete: null })),
+    ];
+    const displayCount = items.length;
 
-    // Tampilkan 8 gamet sebagai bola-bola kecil
-    const displayCount = 8;
-    for (let i = 0; i < displayCount; i++) {
-      // Proporsi aneuploid: misal dari 10.000, 105 aneuploid → 1-2 dari 8 tampil merah
-      const isAneuploid = i < Math.round((aneuploidCount / total) * displayCount);
-      const color = isAneuploid ? COLORS.gametNd : COLORS.gamet;
-
+    const radius = 5;
+    items.forEach((item, i) => {
       const angle = (i / displayCount) * Math.PI * 2;
-      const radius = 5;
-      const geo = new THREE.SphereGeometry(0.7, 20, 20);
-      const mat = new THREE.MeshPhongMaterial({
+
+      // menentukan warna gamete berdasarkan kondisi kromosom
+      let color = COLORS.gamet;
+      if (item.isAneuploid && item.gamete) {
+        const affected   = item.gamete.affected_chromosomes || [];
+        const targetHit  = affected.some(c => c.number === targetChr);
+        const hasMII     = affected.some(c => c.state === 'nd_mII');
+        if (targetHit)     color = COLORS.gametNdTarget;
+        else if (hasMII)   color = COLORS.chrNdMII;
+        else               color = COLORS.gametNd;
+      }
+
+      const size = item.isAneuploid ? 0.8 : 0.65; // gamete aneuploid sedikit lebih besar
+      const geo  = new THREE.SphereGeometry(size, 20, 20);
+      const mat  = new THREE.MeshPhongMaterial({
         color,
         emissive: color,
         emissiveIntensity: 0.3,
@@ -438,11 +360,9 @@ export class MeiosisScene {
       });
       const sphere = new THREE.Mesh(geo, mat);
       sphere.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius * 0.5, 0);
-
       this.scene.add(sphere);
       this._objects.push(sphere);
 
-      // Animasi fade-in
       sphere.scale.set(0, 0, 0);
       gsap.to(sphere.scale, {
         x: 1, y: 1, z: 1,
@@ -451,8 +371,7 @@ export class MeiosisScene {
         ease: 'back.out(1.5)',
       });
 
-      // Pulse emissive untuk aneuploid
-      if (isAneuploid) {
+      if (item.isAneuploid) {
         gsap.to(mat, {
           emissiveIntensity: 0.9,
           duration: 0.5,
@@ -461,20 +380,10 @@ export class MeiosisScene {
           ease: 'sine.inOut',
         });
       }
-    }
+    });
   }
 
-  // ──────────────────────────────────────────────────────────
-  // HELPERS
-  // ──────────────────────────────────────────────────────────
-
-  /**
-   * _clearScene()
-   * // Menghapus semua objek simulasi dari scene dan melepas memori GPU.
-   * // param: tidak ada.
-   * // output: None.
-   * // dipakai untuk: reset scene sebelum memulai animasi baru.
-   */
+ // untuk membersihkan objek dari scene
   _clearScene() {
     this._objects.forEach((obj) => {
       this.scene.remove(obj);
@@ -491,37 +400,31 @@ export class MeiosisScene {
     }
   }
 
-  /**
-   * _setStage(stageName)
-   * // Memanggil callback UI untuk mengupdate stage bar.
-   * // param stageName: string nama fase ('interphase', 'prophase', ...).
-   * // output: None.
-   * // dipakai untuk: sinkronisasi UI stage bar dengan animasi GSAP.
-   */
+  // update stage meiosis
   _setStage(stageName) {
     if (typeof this._onStageChange === 'function') {
       this._onStageChange(stageName);
     }
   }
 
-  /**
-   * onStageChange(callback)
-   * // Mendaftarkan callback yang dipanggil setiap kali stage animasi berubah.
-   * // param callback: function(stageName: string) => void.
-   * // output: None.
-   * // dipakai untuk: menghubungkan scene ke UI stage bar chips di HTML.
-   */
   onStageChange(callback) {
     this._onStageChange = callback;
   }
 
-  /**
-   * togglePause()
-   * // Menjeda atau melanjutkan animasi GSAP dan render loop.
-   * // param: tidak ada.
-   * // output: boolean — status paused saat ini (true = sedang jeda).
-   * // dipakai untuk: tombol Space bar keyboard shortcut.
-   */
+  // untuk melihat stage tertentu
+  seekToStage(stageName) {
+    if (!this._lastSimData) return;
+    this.paused = false;
+    this.playSingleSimulation(this._lastSimData);
+    if (stageName !== 'interphase') {
+      this._timeline.seek(stageName, false);
+    }
+  }
+
+  hasSimulation() {
+    return this._lastSimData !== null;
+  }
+
   togglePause() {
     this.paused = !this.paused;
     if (this._timeline) {
@@ -530,13 +433,7 @@ export class MeiosisScene {
     return this.paused;
   }
 
-  /**
-   * _handleResize()
-   * // Menyesuaikan renderer dan camera saat ukuran jendela berubah.
-   * // param: tidak ada.
-   * // output: None. Mendaftarkan event listener 'resize'.
-   * // dipakai untuk: responsivitas tampilan pada berbagai ukuran layar.
-   */
+  // resize canvas
   _handleResize() {
     window.addEventListener('resize', () => {
       const w = this.canvas.clientWidth;
@@ -547,13 +444,6 @@ export class MeiosisScene {
     });
   }
 
-  /**
-   * dispose()
-   * // Menghancurkan renderer dan membersihkan semua resource Three.js.
-   * // param: tidak ada.
-   * // output: None.
-   * // dipakai untuk: cleanup saat komponen di-unmount (SPA).
-   */
   dispose() {
     this._clearScene();
     this.controls.dispose();
