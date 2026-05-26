@@ -42,7 +42,7 @@ SYNDROME_MAP = {
         2: "Trisomi 16 (letal — penyebab keguguran tersering)",
     },
     22: {
-        2: "Trisomi 22 (Cat Eye Syndrome / mosaik)",
+        2: "Trisomi 22 (letal — mosaik parsial sangat langka)",
     },
     8:  {
         2: "Trisomi 8 (Sindrom Warkany 2 — mosaik viabel)",

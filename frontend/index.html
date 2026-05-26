@@ -58,10 +58,33 @@
         <div class="field">
           <label for="chr-select">Kromosom Fokus</label>
           <select id="chr-select" class="select-input" style="margin-top:6px">
-            <option value="21" selected>Kromosom 21 — Sindrom Down</option>
-            <option value="18">Kromosom 18 — Sindrom Edwards</option>
-            <option value="13">Kromosom 13 — Sindrom Patau</option>
-            <option value="23">Kromosom X/Y — Sindrom Seks</option>
+            <optgroup label="Sindrom Teridentifikasi">
+              <option value="21" selected>Kromosom 21 — Sindrom Down</option>
+              <option value="18">Kromosom 18 — Sindrom Edwards</option>
+              <option value="13">Kromosom 13 — Sindrom Patau</option>
+              <option value="23">Kromosom X/Y — Turner / Klinefelter / Triple-X</option>
+              <option value="8">Kromosom 8 — Sindrom Warkany 2</option>
+              <option value="16">Kromosom 16 — Trisomi 16 (Keguguran Tersering)</option>
+            </optgroup>
+            <optgroup label="Trisomi Letal (aborsi spontan)">
+              <option value="1">Kromosom 1</option>
+              <option value="2">Kromosom 2</option>
+              <option value="3">Kromosom 3</option>
+              <option value="4">Kromosom 4</option>
+              <option value="5">Kromosom 5</option>
+              <option value="6">Kromosom 6</option>
+              <option value="7">Kromosom 7</option>
+              <option value="9">Kromosom 9</option>
+              <option value="10">Kromosom 10</option>
+              <option value="11">Kromosom 11</option>
+              <option value="12">Kromosom 12</option>
+              <option value="14">Kromosom 14</option>
+              <option value="15">Kromosom 15</option>
+              <option value="17">Kromosom 17</option>
+              <option value="19">Kromosom 19</option>
+              <option value="20">Kromosom 20</option>
+              <option value="22">Kromosom 22</option>
+            </optgroup>
           </select>
         </div>
 
@@ -176,8 +199,7 @@
         <div class="chart-box" style="height:220px">
           <canvas id="nd-pie-chart" style="display:none"></canvas>
           <div id="nd-chart-placeholder" class="chart-placeholder">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10H12z"/></svg>
-            <span>Jalankan simulasi untuk<br>melihat distribusi non-disjunction</span>
+            <span style="font-size:0.92rem; font-family:'Inter',system-ui,sans-serif;">Jalankan simulasi untuk<br>melihat distribusi non-disjunction</span>
           </div>
         </div>
       </div>
