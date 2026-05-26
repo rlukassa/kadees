@@ -1,17 +1,8 @@
-/**
- * main.js — Application Entry Point (camelCase sync edition)
- * ===========================================================
- * Mengintegrasikan semua modul: API client, Three.js scene, Chart.js charts,
- * dan DOM event handlers. Semua response keys dari backend menggunakan camelCase.
- */
-
+// Entry point aplikasi
 import { MeiosisScene } from './scenes/MeiosisScene.js';
 import { getRiskProfile, getRiskCurve, runSimulation, runAgeSweep } from './utils/api.js';
 import { createRiskCurveChart, createNdPieChart, drawRiskGauge } from './components/RiskChart.js';
 
-// ─────────────────────────────────────────────
-// DOM REFERENCES
-// ─────────────────────────────────────────────
 const ageSlider      = document.getElementById('age-slider');
 const ageDisplay     = document.getElementById('age-display');
 const nSimSelect     = document.getElementById('n-sim-select');
@@ -25,20 +16,17 @@ const canvasOverlay  = document.getElementById('canvas-overlay');
 const sectionResults = document.getElementById('section-results');
 const syndromeBox    = document.getElementById('syndrome-box');
 
-// Result stat elements — semua key mengikuti camelCase response backend
 const resAneuploid = document.getElementById('res-aneuploid');
 const resObserved  = document.getElementById('res-observed');
 const resNdMI      = document.getElementById('res-nd-mi');
 const resNdMII     = document.getElementById('res-nd-mii');
 
-// Risk stat elements
 const statTotalRisk = document.getElementById('stat-total-risk');
 const statMiRisk    = document.getElementById('stat-mi-risk');
 const statMiiRisk   = document.getElementById('stat-mii-risk');
 const statCategory  = document.getElementById('stat-category');
 const statRatio     = document.getElementById('stat-ratio');
 
-// Stage bar chips
 const stageChips = {
   interphase: document.getElementById('chip-interphase'),
   prophase:   document.getElementById('chip-prophase'),
@@ -48,9 +36,6 @@ const stageChips = {
   gametes:    document.getElementById('chip-gametes'),
 };
 
-// ─────────────────────────────────────────────
-// INIT THREE.JS SCENE
-// ─────────────────────────────────────────────
 const scene = new MeiosisScene(document.getElementById('three-canvas'));
 
 scene.onStageChange((stageName) => {
@@ -59,59 +44,59 @@ scene.onStageChange((stageName) => {
   if (chip) chip.classList.add('active');
 });
 
-// ─────────────────────────────────────────────
-// INIT: Load risk curve & risk profile default
-// ─────────────────────────────────────────────
+
 let riskCurveData = [];
 
+function showChartCanvas(canvasId, placeholderId) {
+  const canvas = document.getElementById(canvasId);
+  const ph = document.getElementById(placeholderId);
+  if (canvas) canvas.style.display = 'block';
+  if (ph) ph.style.display = 'none';
+}
+
 async function initApp() {
+  drawRiskGauge('risk-gauge', 0, 60);
   try {
     const curveRes = await getRiskCurve(15, 50);
     riskCurveData = curveRes.curve;
+    showChartCanvas('risk-chart', 'risk-chart-placeholder');
     createRiskCurveChart('risk-chart', riskCurveData, 30);
     await updateRiskProfile(30);
-  } catch (err) {
+  } catch {
     showToast('Backend tidak terhubung. Pastikan server FastAPI berjalan.', 'error');
   }
 }
 
-// ─────────────────────────────────────────────
-// RISK PROFILE UPDATE — baca field camelCase dari response
-// ─────────────────────────────────────────────
 async function updateRiskProfile(age) {
   try {
     const profile = await getRiskProfile(age);
 
-    // Backend mengembalikan camelCase: totalRiskPercent, meiosisIRisk, meiosisIIRisk, dll.
-    statTotalRisk.textContent = `${profile.totalRiskPercent.toFixed(4)}%`;
-    statMiRisk.textContent    = `${(profile.meiosisIRisk * 100).toFixed(4)}%`;
-    statMiiRisk.textContent   = `${(profile.meiosisIIRisk * 100).toFixed(4)}%`;
-    statRatio.textContent     = `${profile.riskRatioToBase.toFixed(1)}x`;
+    statTotalRisk.textContent = `${profile.total_risk_percent.toFixed(4)}%`;
+    statMiRisk.textContent    = `${(profile.meiosis_I_risk * 100).toFixed(4)}%`;
+    statMiiRisk.textContent   = `${(profile.meiosis_II_risk * 100).toFixed(4)}%`;
+    statRatio.textContent     = `${profile.risk_ratio_to_base.toFixed(1)}x`;
 
-    // Update badge kategori
-    const catMap = {
-      'rendah': 'rendah', 'sedang': 'sedang',
-      'tinggi': 'tinggi', 'sangat tinggi': 'sangat-tinggi'
+    // mapping warna badge berdasarkan kategori risiko
+    const catStyles = {
+      rendah:          { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0', label: 'Rendah' },
+      sedang:          { bg: '#fffbeb', color: '#b45309', border: '#fde68a', label: 'Sedang' },
+      tinggi:          { bg: '#fff7ed', color: '#c2410c', border: '#fed7aa', label: 'Tinggi' },
+      'sangat tinggi': { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca', label: 'Sangat Tinggi' },
     };
-    const catClass = catMap[profile.riskCategory] || 'rendah';
-    statCategory.textContent = profile.riskCategory.toUpperCase();
-    statCategory.className = `stat-value risk-badge ${catClass}`;
+    const style = catStyles[profile.risk_category] || catStyles.rendah;
+    statCategory.textContent = style.label;
+    statCategory.style.cssText = `background:${style.bg};color:${style.color};border:1px solid ${style.border}`;
 
-    // Update gauge
-    drawRiskGauge('risk-gauge', profile.totalRiskPercent, 60);
+    drawRiskGauge('risk-gauge', profile.total_risk_percent, 60);
 
-    // Update garis pada chart
     if (riskCurveData.length) {
       createRiskCurveChart('risk-chart', riskCurveData, age);
     }
-  } catch (err) {
-    // Silently fail — backend mungkin belum jalan
+  } catch {
   }
 }
 
-// ─────────────────────────────────────────────
-// EVENT: Slider Usia
-// ─────────────────────────────────────────────
+// debounce biar request ga spam tiap slider digeser
 let sliderDebounce;
 ageSlider.addEventListener('input', () => {
   const age = parseInt(ageSlider.value);
@@ -120,113 +105,93 @@ ageSlider.addEventListener('input', () => {
   sliderDebounce = setTimeout(() => updateRiskProfile(age), 300);
 });
 
-// ─────────────────────────────────────────────
-// EVENT: Tombol Jalankan Simulasi
-// ─────────────────────────────────────────────
 btnRun.addEventListener('click', async () => {
   const age    = parseInt(ageSlider.value);
   const nSim   = parseInt(nSimSelect.value);
   const chrNum = parseInt(chrSelect.value);
 
-  setLoading(true, `Menjalankan ${nSim.toLocaleString()} iterasi Monte Carlo…`);
+  setLoading(true, `Menjalankan ${nSim.toLocaleString()} iterasi Monte Carlo...`);
   btnRun.disabled = true;
 
   try {
     const data = await runSimulation({
-      maternalAge:      age,        // camelCase — sinkron dengan backend v2.0
-      nSimulations:     nSim,
-      targetChromosome: chrNum,
+      maternal_age: age,
+      n_simulations: nSim,
+      target_chromosome: chrNum,
     });
 
-    // Response backend sudah camelCase: aneuploidCount, observedRiskPercent, dll.
+    // tampilkan hasil simulasi ke panel statistik
     const r = data.results;
-    resAneuploid.textContent = r.aneuploidCount.toLocaleString();
-    resObserved.textContent  = `${r.observedRiskPercent.toFixed(4)}%`;
-    resNdMI.textContent      = r.ndMeiosisICount.toLocaleString();
-    resNdMII.textContent     = r.ndMeiosisIICount.toLocaleString();
+    resAneuploid.textContent = r.aneuploid_count.toLocaleString();
+    resObserved.textContent  = `${r.observed_risk_percent.toFixed(4)}%`;
+    resNdMI.textContent      = r.nd_meiosis_I_count.toLocaleString();
+    resNdMII.textContent     = r.nd_meiosis_II_count.toLocaleString();
 
-    // Tampilkan sindrom
-    if (Object.keys(r.syndromeCounts).length > 0) {
-      const synHtml = Object.entries(r.syndromeCounts)
-        .sort((a, b) => b[1] - a[1])
-        .map(([syn, cnt]) => `<div>🔴 <strong>${syn}</strong>: ${cnt} gamet</div>`)
+    if (Object.keys(r.syndrome_counts).length > 0) {
+      syndromeBox.innerHTML = Object.entries(r.syndrome_counts)
+        .sort((a, b) => b[1] - a[1]) // urutkan sindrom dari jumlah terbanyak
+        .map(([syn, cnt]) => `<div><strong>${syn}</strong>: ${cnt} gamet</div>`)
         .join('');
-      syndromeBox.innerHTML = synHtml;
     } else {
-      syndromeBox.innerHTML = '<div>✅ Tidak ada aneuploidi terdeteksi pada sampel ini.</div>';
+      syndromeBox.innerHTML = '<div>Tidak ada aneuploidi terdeteksi pada sampel ini.</div>';
     }
 
     sectionResults.style.display = 'block';
-
-    // Update pie chart — gunakan ndMeiosisICount, ndMeiosisIICount (camelCase)
-    createNdPieChart('nd-pie-chart', r.ndMeiosisICount, r.ndMeiosisIICount);
-
-    // Sembunyikan canvas overlay dan play animasi Three.js
+    showChartCanvas('nd-pie-chart', 'nd-chart-placeholder');
+    createNdPieChart('nd-pie-chart', r.nd_meiosis_I_count, r.nd_meiosis_II_count);
     canvasOverlay.classList.add('hidden');
     scene.playSingleSimulation(data);
 
-    showToast(`✅ Simulasi selesai dalam ${r.executionTimeMs.toFixed(0)} ms`);
+    showToast(`Simulasi selesai dalam ${r.execution_time_ms.toFixed(0)} ms`);
   } catch (err) {
-    showToast(`❌ Error: ${err.message}`, 'error');
+    showToast(`Error: ${err.message}`, 'error');
   } finally {
     setLoading(false);
     btnRun.disabled = false;
   }
 });
 
-// ─────────────────────────────────────────────
-// EVENT: Age Sweep
-// ─────────────────────────────────────────────
 btnSweep.addEventListener('click', async () => {
-  setLoading(true, 'Menjalankan analisis sweep usia 20–45…');
+  setLoading(true, 'Menjalankan analisis sweep usia 20-45...');
   btnSweep.disabled = true;
   try {
-    // Response: { sweep: [{age, observedRisk, modelRisk, aneuploidCount}], totalAges }
     const data = await runAgeSweep(20, 45, 500);
     createRiskCurveChart('risk-chart', data.sweep.map(d => ({
-      maternalAge:       d.age,
-      totalRiskPercent:  d.observedRisk * 100,   // backend returns fraction
+      maternal_age: d.age,
+      total_risk_percent: d.observed_risk * 100,
     })), parseInt(ageSlider.value));
-    showToast(`✅ Sweep selesai. ${data.totalAges} titik usia dianalisis.`);
+    showToast(`Sweep selesai. ${data.total_ages} titik usia dianalisis.`);
   } catch (err) {
-    showToast(`❌ Error sweep: ${err.message}`, 'error');
+    showToast(`Error sweep: ${err.message}`, 'error');
   } finally {
     setLoading(false);
     btnSweep.disabled = false;
   }
 });
 
-// ─────────────────────────────────────────────
-// EVENT: Keyboard Shortcut (Space = pause)
-// ─────────────────────────────────────────────
+// shortcut space untuk pause/resume animasi
 document.addEventListener('keydown', (e) => {
   if (e.code === 'Space' && e.target === document.body) {
     e.preventDefault();
     const paused = scene.togglePause();
-    showToast(paused ? '⏸️ Animasi dijeda' : '▶️ Animasi dilanjutkan');
+    showToast(paused ? 'Animasi dijeda' : 'Animasi dilanjutkan');
   }
 });
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
-
+// toggle overlay loading selama request berjalan
 function setLoading(visible, text = '') {
   loadingOverlay.classList.toggle('visible', visible);
-  loadingOverlay.setAttribute('aria-hidden', String(!visible));
   if (text) loadingText.textContent = text;
 }
 
 let toastTimeout;
 function showToast(message, type = 'info') {
   toast.textContent = message;
-  toast.style.borderColor = type === 'error' ? 'rgba(255,71,87,0.4)' : 'rgba(255,255,255,0.08)';
+  toast.style.borderColor = type === 'error' ? '#fecaca' : '#bbf7d0';
   toast.classList.add('show');
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-// ─────────────────────────────────────────────
-// START
-// ─────────────────────────────────────────────
+// load data awal untuk chart & risk profile
 initApp();
