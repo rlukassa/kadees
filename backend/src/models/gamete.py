@@ -6,7 +6,7 @@ from .chromosome import Chromosome, ChromosomeState
 
 class GameteSex(Enum):
     EGG   = "egg"    # Sel telur (oosit) — dari ibu
-    SPERM = "sperm"  # Spermatozoa — dari ayah
+    SPERM = "sperm"  # Spermatozoa — dari ayah 
 
 
 class AneuploidyType(Enum):
@@ -19,44 +19,42 @@ class AneuploidyType(Enum):
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Peta sindrom klinis: { nomor_kromosom: { count_di_gamet: nama_sindrom } }
-# Interpretasi: jika gamet memiliki `count` salinan kromosom X, setelah
-# dibuahi sperma normal (1 salinan), zigot akan mengalami sindrom terkait.
+# Interpretasi: jumlah salinan kromosom abnormal dalam gamet
+# dapat menghasilkan aneuploidi tertentu setelah fertilisasi.
 #
-# Sumber: OMIM, ACMG (2016), Hook EB (1981), Hassold & Hunt (2001)
+# Sumber: OMIM (omim.org), Hassold & Hunt (2001) Nature Reviews Genetics
 # ─────────────────────────────────────────────────────────────────────────────
 SYNDROME_MAP = {
-    # Autosom
     21: {
-        0: "Monosomi 21 Parsial (tidak viabel)",
+        0: "Monosomi 21 (umumnya tidak viabel)",
         2: "Trisomi 21 (Sindrom Down)",
     },
     18: {
-        0: "Monosomi 18 (tidak viabel)",
+        0: "Monosomi 18 (umumnya tidak viabel)",
         2: "Trisomi 18 (Sindrom Edwards)",
     },
     13: {
-        0: "Monosomi 13 (tidak viabel)",
+        0: "Monosomi 13 (umumnya tidak viabel)",
         2: "Trisomi 13 (Sindrom Patau)",
     },
     16: {
-        2: "Trisomi 16 (letal — penyebab keguguran tersering)",
+        2: "Trisomi 16 (letal; umum pada keguguran trimester pertama)",
     },
     22: {
-        2: "Trisomi 22 (letal — mosaik parsial sangat langka)",
+        2: "Trisomi 22 (umumnya letal; mosaik dapat viabel)",
     },
-    8:  {
-        2: "Trisomi 8 (Sindrom Warkany 2 — mosaik viabel)",
+    8: {
+        2: "Trisomi 8 (Sindrom Warkany 2; biasanya mosaik)",
     },
-    # Kromosom seks (nomor 23 dalam representasi internal kita = kromosom X/Y)
     23: {
         0: "Monosomi X (Sindrom Turner / 45,X)",
-        2: "Trisomi Seks — Klinefelter (47,XXY) atau Triple-X (47,XXX)",
-        3: "Tetrasomi Seks — 48,XXXY atau 48,XXXX",
+        2: "Trisomi kromosom seks (mis. 47,XXY / Klinefelter; 47,XXX / Triple-X)",
+        3: "Tetrasomi seks (mis. 48,XXXY atau 48,XXYY pada laki-laki; 48,XXXX pada perempuan)",
     },
 }
-
-# Kromosom yang tidak termasuk map → fallback berdasarkan jumlah total gamet
-_LETHAL_TRISOMY_RANGE = set(range(1, 13)) | {14, 15, 17, 19, 20}
+ 
+# Trisomi autosom yang umumnya letal/non-viabel pada kondisi non-mosaik
+_LETHAL_TRISOMY_RANGE = set(range(1, 8)) | set(range(9, 13)) | {14, 15, 17, 19, 20}
 
 
 @dataclass
@@ -91,6 +89,9 @@ class Gamete:
     def isAneuploid(self) -> bool:
         return self.chromosomeCount != 23
 
+    
+    # Kromosom seks diasumsikan berasal dari gamet ibu (EGG)
+    # Gamet dari ayah dianggap normal
     def predictSyndrome(self) -> Optional[str]:
         if not self.isAneuploid():
             return None
@@ -100,7 +101,6 @@ class Gamete:
         for c in self.chromosomes:
             chrCounts[c.number] = chrCounts.get(c.number, 0) + 1
 
-        # Cek setiap kromosom yang count-nya != 1 (abnormal)
         for chrNum, count in chrCounts.items():
             if count == 1:
                 continue  # Normal untuk kromosom ini
@@ -111,10 +111,7 @@ class Gamete:
                 if syndrome:
                     return syndrome
 
-            # Kromosom yang hilang (count == 0) — cek monosomi
-            # (kromosom tidak muncul dalam chrCounts sama sekali berarti count=0)
-
-        # Cek kromosom yang HILANG dari gamet (harusnya ada 23 unik)
+        # Cek kromosom yang hilang dari gamet (harusnya ada 23 unik)
         expectedChr = set(range(1, 24))
         presentChr  = set(chrCounts.keys())
         missingChr  = expectedChr - presentChr
@@ -123,17 +120,15 @@ class Gamete:
             if chrNum in SYNDROME_MAP and 0 in SYNDROME_MAP[chrNum]:
                 return SYNDROME_MAP[chrNum][0]
 
-        # Trisomi pada kromosom letal
         for chrNum, count in chrCounts.items():
             if count >= 2 and chrNum in _LETHAL_TRISOMY_RANGE:
                 return f"Trisomi {chrNum} (letal — aborsi spontan)"
-
-        # Fallback: aneuploidi tidak terklasifikasi
+ 
         total = self.chromosomeCount
         if total > 23:
-            return "Aneuploidi — Trisomi tidak terklasifikasi (kemungkinan tidak viabel)"
+            return "Aneuploidi trisomi tidak terklasifikasi (kemungkinan tidak viabel)"
         else:
-            return "Aneuploidi — Monosomi tidak terklasifikasi (kemungkinan tidak viabel)"
+            return "Aneuploidi monosomi tidak terklasifikasi (kemungkinan tidak viabel)"
 
     def toDict(self) -> dict:
         return {
