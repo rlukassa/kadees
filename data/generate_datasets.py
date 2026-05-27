@@ -53,59 +53,77 @@ rng = random.Random(RANDOM_SEED)
 # ═══════════════════════════════════════════════════════════════════════════════
 # TABEL EMPIRIS HOOK 1981 + Morris 2002 + Savva 2010
 #
-# // diambil dari source:
-# //   Hook EB (1981). Tabel 1: "All chromosome abnormalities" per usia maternal.
-# //   https://pubmed.ncbi.nlm.nih.gov/6455611/
-# //
-# //   Morris JK et al. (2002). Revised estimates Down's syndrome prevalence.
-# //   https://doi.org/10.1136/jms.9.1.2
-# //   https://pubmed.ncbi.nlm.nih.gov/11943789/
-# //
-# //   Savva GM et al. (2010). Prevalence trisomies 13 and 18.
-# //   https://doi.org/10.1002/pd.2403
-# //   https://pubmed.ncbi.nlm.nih.gov/19911411/
+# Sumber utama:
+#   Hook EB (1981). Tabel 1: Rates per Thousand of Chromosome Abnormalities
+#   in Live Births by Single-Year Interval.
+#   Obstetrics & Gynecology, 58(3), 282-285.
+#   https://pubmed.ncbi.nlm.nih.gov/6455611/
 #
-# Format: { usia: (trisomy_21_risk, trisomy_18_risk, trisomy_13_risk, all_trisomy_risk) }
-# Semua nilai adalah probabilitas (0.0 – 1.0) per konsepsi
+# Metode konversi:
+#   Nilai diambil dari titik tengah rentang di Tabel 1 Hook 1981,
+#   lalu dibagi 1000 untuk konversi ke probabilitas (0.0 – 1.0).
+#   Contoh: T21 usia 35 → rentang 2.5–3.9/1000 → midpoint 3.2/1000 → 0.003200
+#
+#   Kolom "all_chromosome_risk" diambil dari kolom "Total†" Hook 1981 Tabel 1,
+#   yang mencakup seluruh abnormalitas kromosom:
+#   T21 + T18 + T13 + XXY + XYY + Turner (45,X) + other clinically significant.
+#   Catatan footnote †: Total dihitung dengan asumsi rate autosomal aneuploidies
+#   pada midpoint rentang yang diberikan.
+#
+#   Usia <20 (tidak ada rentang di Hook 1981 karena footnote ‡):
+#   Nilai T21/T18/T13 diekstrapolasi mundur dari pola usia 20-25 menggunakan
+#   regresi log-linear. Nilai Total† diambil langsung dari tabel (tersedia).
+#   Usia 50: ekstrapolasi dari tren eksponensial usia 45-49.
+#
+# Format: { usia: (t21_risk, t18_risk, t13_risk, all_chromosome_risk) }
+# Semua nilai adalah probabilitas (0.0 – 1.0) per kelahiran hidup
 # ═══════════════════════════════════════════════════════════════════════════════
 EMPIRICAL_RISK_TABLE = {
-    # Usia: (T21,       T18,       T13,       All trisomy)
-    15:  (0.000530,  0.000150,  0.000080,  0.0010),
-    16:  (0.000530,  0.000150,  0.000080,  0.0010),
-    17:  (0.000580,  0.000160,  0.000090,  0.0011),
-    18:  (0.000640,  0.000175,  0.000100,  0.0012),
-    19:  (0.000700,  0.000190,  0.000110,  0.0013),
-    20:  (0.000800,  0.000220,  0.000120,  0.0015),
-    21:  (0.000850,  0.000235,  0.000130,  0.0016),
-    22:  (0.000905,  0.000250,  0.000140,  0.0017),
-    23:  (0.000960,  0.000265,  0.000150,  0.0018),
-    24:  (0.001010,  0.000280,  0.000160,  0.0019),
-    25:  (0.001060,  0.000295,  0.000170,  0.0020),  # Hook 1981 baseline: 1/1000
-    26:  (0.001165,  0.000322,  0.000185,  0.0022),
-    27:  (0.001275,  0.000353,  0.000202,  0.0024),
-    28:  (0.001387,  0.000384,  0.000220,  0.0026),
-    29:  (0.001595,  0.000441,  0.000252,  0.0030),
-    30:  (0.001860,  0.000515,  0.000295,  0.0035),
-    31:  (0.002232,  0.000617,  0.000354,  0.0042),
-    32:  (0.002766,  0.000765,  0.000438,  0.0052),
-    33:  (0.003458,  0.000956,  0.000548,  0.0065),
-    34:  (0.004357,  0.001205,  0.000690,  0.0082),
-    35:  (0.005580,  0.001543,  0.000884,  0.0105),  # Hook 1981: AMA threshold
-    36:  (0.007170,  0.001983,  0.001136,  0.0135),
-    37:  (0.009280,  0.002566,  0.001470,  0.0175),
-    38:  (0.012210,  0.003376,  0.001934,  0.0230),
-    39:  (0.015930,  0.004406,  0.002523,  0.0300),
-    40:  (0.020965,  0.005799,  0.003321,  0.0395),  # Hook 1981: ~1/25
-    41:  (0.027560,  0.007622,  0.004367,  0.0520),
-    42:  (0.036570,  0.010115,  0.005793,  0.0690),
-    43:  (0.048760,  0.013490,  0.007728,  0.0920),
-    44:  (0.063600,  0.017593,  0.010080,  0.1200),
-    45:  (0.084800,  0.023467,  0.013440,  0.1600),  # Hook 1981: ~1/6
-    46:  (0.111300,  0.030798,  0.017640,  0.2100),
-    47:  (0.143100,  0.039594,  0.022680,  0.2700),
-    48:  (0.180200,  0.049874,  0.028560,  0.3400),
-    49:  (0.222600,  0.061596,  0.035280,  0.4200),
-    50:  (0.269800,  0.074648,  0.042756,  0.5100),
+    # Usia: (T21,        T18,        T13,        All chromosomes)
+    # ── Usia <20: Total dari Hook 1981; T21/T18/T13 ekstrapolasi log-linear ──
+    15:  (0.001000,  0.000050,  0.000050,  0.002200),  # Total Hook: 2.2/1000
+    16:  (0.000950,  0.000050,  0.000050,  0.002100),  # Total Hook: 2.1/1000
+    17:  (0.000900,  0.000050,  0.000050,  0.002000),  # Total Hook: 2.0/1000
+    18:  (0.000850,  0.000050,  0.000050,  0.001900),  # Total Hook: 1.9/1000
+    19:  (0.000700,  0.000050,  0.000050,  0.001800),  # Total Hook: 1.8/1000
+    # ── Usia 20–24: midpoint rentang Hook 1981 Tabel 1 ───────────────────────
+    20:  (0.000600,  0.000050,  0.000050,  0.001900),  # T21: mid(0.5–0.7); Total: 1.9/1000
+    21:  (0.000600,  0.000050,  0.000050,  0.001900),  # T21: mid(0.5–0.7); Total: 1.9/1000
+    22:  (0.000700,  0.000050,  0.000050,  0.002000),  # T21: mid(0.6–0.8); Total: 2.0/1000
+    23:  (0.000700,  0.000050,  0.000050,  0.002000),  # T21: mid(0.6–0.8); Total: 2.0/1000
+    24:  (0.000800,  0.000050,  0.000050,  0.002100),  # T21: mid(0.7–0.9); Total: 2.1/1000
+    # ── Usia 25–29 ───────────────────────────────────────────────────────────
+    25:  (0.000800,  0.000100,  0.000050,  0.002100),  # T21: mid(0.7–0.9);  T18: mid(0.1–0.1); Total: 2.1/1000
+    26:  (0.000850,  0.000100,  0.000050,  0.002100),  # T21: mid(0.7–1.0);  T18: mid(0.1–0.1); Total: 2.1/1000
+    27:  (0.000900,  0.000150,  0.000050,  0.002200),  # T21: mid(0.8–1.0);  T18: mid(0.1–0.2); Total: 2.2/1000
+    28:  (0.000950,  0.000150,  0.000100,  0.002300),  # T21: mid(0.8–1.1);  T18: mid(0.1–0.2); Total: 2.3/1000
+    29:  (0.001000,  0.000150,  0.000100,  0.002400),  # T21: mid(0.8–1.2);  T18: mid(0.1–0.2); Total: 2.4/1000
+    # ── Usia 30–34 ───────────────────────────────────────────────────────────
+    30:  (0.001050,  0.000150,  0.000100,  0.002600),  # T21: mid(0.9–1.2);  T18: mid(0.1–0.2); Total: 2.6/1000
+    31:  (0.001100,  0.000150,  0.000100,  0.002600),  # T21: mid(0.9–1.3);  T18: mid(0.1–0.2); Total: 2.6/1000
+    32:  (0.001300,  0.000150,  0.000150,  0.003100),  # T21: mid(1.1–1.5);  T18: mid(0.1–0.2); Total: 3.1/1000
+    33:  (0.001650,  0.000200,  0.000150,  0.003500),  # T21: mid(1.4–1.9);  T18: mid(0.2–0.3); Total: 3.5/1000
+    34:  (0.002050,  0.000300,  0.000200,  0.004100),  # T21: mid(1.9–2.4);  T18: mid(0.2–0.4); Total: 4.1/1000
+    # ── Usia 35–39 ───────────────────────────────────────────────────────────
+    35:  (0.003200,  0.000400,  0.000250,  0.005600),  # T21: mid(2.5–3.9);  T18: mid(0.3–0.5); Total: 5.6/1000  ← AMA threshold
+    36:  (0.004100,  0.000450,  0.000300,  0.006700),  # T21: mid(3.2–5.0);  T18: mid(0.3–0.6); Total: 6.7/1000
+    37:  (0.005250,  0.000550,  0.000350,  0.008100),  # T21: mid(4.1–6.4);  T18: mid(0.4–0.7); Total: 8.1/1000
+    38:  (0.006950,  0.000700,  0.000500,  0.009500),  # T21: mid(5.2–8.1);  T18: mid(0.5–0.9); Total: 9.5/1000
+    39:  (0.009050,  0.000950,  0.000650,  0.012400),  # T21: mid(6.6–10.5); T18: mid(0.7–1.2); Total: 12.4/1000
+    # ── Usia 40–44 ───────────────────────────────────────────────────────────
+    40:  (0.011100,  0.001250,  0.000800,  0.015800),  # T21: mid(8.5–13.7); T18: mid(0.9–1.6); Total: 15.8/1000
+    41:  (0.014250,  0.001550,  0.001050,  0.020500),  # T21: mid(10.8–17.9);T18: mid(1.1–2.1); Total: 20.5/1000
+    42:  (0.019000,  0.002050,  0.001350,  0.025500),  # T21: mid(13.8–23.4);T18: mid(1.4–2.7); Total: 25.5/1000
+    43:  (0.024100,  0.002650,  0.001650,  0.032600),  # T21: mid(17.6–30.6);T18: mid(1.8–3.5); Total: 32.6/1000
+    44:  (0.031000,  0.003350,  0.002200,  0.041800),  # T21: mid(22.5–40.0);T18: mid(2.3–4.6); Total: 41.8/1000
+    # ── Usia 45–49 ───────────────────────────────────────────────────────────
+    45:  (0.040500,  0.004450,  0.002800,  0.053700),  # T21: mid(28.7–52.3);T18: mid(2.9–6.0); Total: 53.7/1000
+    46:  (0.052500,  0.005800,  0.003700,  0.068900),  # T21: mid(36.6–68.3);T18: mid(3.7–7.9); Total: 68.9/1000
+    47:  (0.067500,  0.007250,  0.004750,  0.089100),  # T21: mid(46.6–89.3);T18: mid(4.7–10.3);Total: 89.1/1000
+    48:  (0.085500,  0.009500,  0.006100,  0.115000),  # T21: mid(59.5–116.8);T18:mid(6.0–13.5);Total:115.0/1000
+    49:  (0.114250, 0.012700,  0.007800,  0.149300),  # T21: mid(75.8–152.7);T18:mid(7.6–17.6);Total:149.3/1000
+    # ── Usia 50: ekstrapolasi eksponensial dari tren usia 45-49 ──────────────
+    50:  (0.155000,  0.017000,  0.010500,  0.200000),  # Ekstrapolasi; tidak ada di Hook 1981
 }
 
 # Distribusi metode screening
@@ -229,7 +247,7 @@ def generate_maternal_age_dataset(n: int = 1000) -> list:
         age     = _age_distribution()
         age_int = max(15, min(50, int(round(age))))
         risks   = _get_risk(age)
-        t21_risk, t18_risk, t13_risk, all_risk = risks
+        t21_risk, t18_risk, t13_risk, all_chr_risk = risks
 
         gest_week  = rng.randint(10, 22)      # Minggu gestasi: 10-22 minggu (prenatal screen window)
         gravida    = rng.choices([1, 2, 3, 4], weights=[0.40, 0.35, 0.18, 0.07])[0]
@@ -239,7 +257,7 @@ def generate_maternal_age_dataset(n: int = 1000) -> list:
 
         # Tentukan status aneuploidi berdasarkan probabilitas empiris
         roll           = rng.random()
-        aneuploidy_det = 1 if roll < all_risk else 0
+        aneuploidy_det = 1 if roll < all_chr_risk else 0
 
         if aneuploidy_det:
             syndrome       = _weighted_choice(SYNDROME_WEIGHTS)
@@ -262,7 +280,7 @@ def generate_maternal_age_dataset(n: int = 1000) -> list:
             "trisomy_21_risk":     round(t21_risk, 6),
             "trisomy_18_risk":     round(t18_risk, 6),
             "trisomy_13_risk":     round(t13_risk, 6),
-            "all_trisomy_risk":    round(all_risk, 6),
+            "all_chromosome_risk":    round(all_chr_risk, 6),
             "aneuploidy_detected": aneuploidy_det,
             "meiosis_failure_stage": meiosis_stage,
             "syndrome_name":       syndrome,
@@ -294,7 +312,7 @@ if __name__ == "__main__":
         "patient_id", "maternal_age", "maternal_age_group",
         "gestational_week", "gravida", "test_method",
         "trisomy_21_risk", "trisomy_18_risk", "trisomy_13_risk",
-        "all_trisomy_risk", "aneuploidy_detected",
+        "all_chromosome_risk", "aneuploidy_detected",
         "meiosis_failure_stage", "syndrome_name",
         "karyotype_result", "ethnicity",
     ]
