@@ -208,7 +208,128 @@
   </main>
 
   <!-- Education Section -->
-  <section id="edu"></section>
+  <section id="edu">
+
+    <div id="edu-hero">
+      <div class="edu-hero-inner">
+        <h2 class="edu-h1">Mengenal</h2>
+        <h2 class="edu-h2">Sindrom Kelainan Kromosom</h2>
+        <p class="edu-desc">
+          Aneuploidi terjadi akibat kegagalan pemisahan kromosom saat meiosis
+          (<em>non-disjunction</em>), yang dapat menyebabkan berbagai sindrom genetik
+          dengan karakteristik klinis berbeda. Pelajari setiap sindrom melalui karyotipe,
+          manifestasi klinis, insidensi, serta kaitannya dengan peningkatan usia maternal.
+        </p>
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="edu-search" placeholder="Cari nama, karyotipe, atau gejala..." />
+        </div>
+        <div id="filter-group">
+          <button class="filt active-filt" data-f="all">Semua</button>
+          <button class="filt" data-f="viable">Viable</button>
+          <button class="filt" data-f="autosom">Trisomi Autosom</button>
+          <button class="filt" data-f="seks">Kromosom Seks</button>
+          <button class="filt" data-f="mosaik">Mosaik</button>
+          <button class="filt" data-f="ama">Terkait Usia Ibu</button>
+        </div>
+        <div class="via-legend">
+          <span class="vleg"><span class="vleg-dot vleg-dot--green"></span>Viable — bayi umumnya lahir hidup</span>
+          <span class="vleg"><span class="vleg-dot vleg-dot--amber"></span>Jarang Viable — &gt;90% berakhir keguguran</span>
+          <span class="vleg"><span class="vleg-dot vleg-dot--red"></span>Tidak Viable — tidak kompatibel dengan kehidupan</span>
+          <span class="vleg"><span class="vleg-dot vleg-dot--muted"></span>Mosaik — sebagian sel normal, gejala bervariasi</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-wrap" id="spotlight-section">
+      <div class="divider"><span>Sindrom Paling Umum</span></div>
+      <div id="spotlight-grid"></div>
+    </div>
+
+    <div class="section-wrap">
+      <div class="divider"><span id="all-divider-text">Semua Sindrom Kromosom</span></div>
+      <div id="all-grid"></div>
+      <div id="empty-msg">Tidak ada sindrom yang cocok.</div>
+    </div>
+
+    <div class="section-wrap">
+      <div id="nd-explainer">
+        <div class="xpl-left">
+          <h3 class="xpl-h">Apa itu <em>Non-Disjunction?</em></h3>
+          <p class="xpl-body">
+            Non-disjunction adalah kegagalan kromosom homolog (<strong>Meiosis I</strong>)
+            atau kromatid saudara (<strong>Meiosis II</strong>) untuk berpisah dengan benar.
+            Hasilnya adalah gamet dengan kromosom berlebih (<strong>trisomi, 2n+1</strong>)
+            atau kekurangan (<strong>monosomi, 2n-1</strong>).
+          </p>
+          <p class="xpl-body" style="margin-top:10px">
+            Bila gamet ini dibuahi, kelainan kromosom terbawa ke seluruh sel tubuh embrio.
+          </p>
+          <div class="xpl-stats">
+            <div class="xpl-stat">
+              <span class="xpl-num xpl-num--blue">75%</span>
+              <span class="xpl-lbl">ND terjadi di Meiosis I<br>(kromosom homolog gagal pisah)</span>
+            </div>
+            <div class="xpl-stat">
+              <span class="xpl-num xpl-num--indigo">25%</span>
+              <span class="xpl-lbl">ND terjadi di Meiosis II<br>(kromatid saudara gagal pisah)</span>
+            </div>
+          </div>
+        </div>
+        <div class="xpl-right">
+          <div class="nd-row">
+            <span class="nd-lbl">Normal</span>
+            <div class="nd-cell">
+              <div class="nd-chr nd-chr--blue"></div>
+              <div class="nd-chr nd-chr--indigo"></div>
+            </div>
+            <span class="nd-arrow">&#8594;</span>
+            <div class="nd-gmts">
+              <span class="gmt gmt--ok">1 chr</span>
+              <span class="gmt gmt--ok">1 chr</span>
+            </div>
+          </div>
+          <div class="nd-row">
+            <span class="nd-lbl nd-lbl--red">ND Meiosis I</span>
+            <div class="nd-cell nd-cell--red">
+              <div class="nd-chr nd-chr--blue nd-chr--close"></div>
+              <div class="nd-chr nd-chr--indigo nd-chr--close"></div>
+            </div>
+            <span class="nd-arrow">&#8594;</span>
+            <div class="nd-gmts">
+              <span class="gmt gmt--bad">2 chr</span>
+              <span class="gmt gmt--nil">0 chr</span>
+            </div>
+          </div>
+          <div class="nd-row">
+            <span class="nd-lbl nd-lbl--amber">ND Meiosis II</span>
+            <div class="nd-cell nd-cell--amber">
+              <div class="nd-chr nd-chr--blue"></div>
+            </div>
+            <span class="nd-arrow">&#8594;</span>
+            <div class="nd-gmts">
+              <span class="gmt gmt--bad">2 chr</span>
+              <span class="gmt gmt--ok">1 chr</span>
+              <span class="gmt gmt--nil">0 chr</span>
+            </div>
+          </div>
+          <p class="nd-note">Ilustrasi menggunakan satu pasang kromosom homolog sebagai contoh; situasi nyata jauh lebih kompleks</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="risk-strip">
+      <div class="section-wrap">
+        <div class="strip-head">
+          <h3 class="strip-h">Risiko Aneuploidi per Usia Maternal</h3>
+          <p class="strip-sub">Probabilitas meningkat eksponensial setelah usia 35 tahun (ambang AMA)</p>
+        </div>
+        <div id="age-bars"><canvas id="age-bars-canvas"></canvas></div>
+        <p class="strip-note">Sumber: Hook EB (1981) <em>Obstet Gynecol</em> — Estimates of Rates per Thousand of Chromosome Abnormalities in Live Births by Single-Year Interval</p>
+      </div>
+    </div>
+
+  </section>
 
   <div id="loading-overlay">
     <div class="spinner"></div>
