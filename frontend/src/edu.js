@@ -1,8 +1,8 @@
 import { getRiskCurve } from './utils/api.js';
 import Chart from 'chart.js/auto';
 
-// Fallback lokal — Hook EB (1981) Obstet Gynecol 58(3):282-285
-// Tabel 1: Total kelainan kromosom per 1.000 kelahiran hidup, dikonversi ke persen
+// cache risk curve dari backend, fallback lokal kalo fetch gagal
+// tabel 1: Total kelainan kromosom per 1.000 kelahiran hidup, dikonversi ke persen
 const RISK_FALLBACK = {
   15:.22, 16:.21, 17:.20, 18:.19, 19:.18,
   20:.19, 21:.19, 22:.20, 23:.20, 24:.21,
@@ -11,7 +11,7 @@ const RISK_FALLBACK = {
   35:.56, 36:.67, 37:.81, 38:.95, 39:1.24,
   40:1.58, 41:2.05, 42:2.55, 43:3.26, 44:4.18,
   45:5.37, 46:6.89, 47:8.91, 48:11.50, 49:14.93,
-  50:14.93, // tabel berakhir di 49; usia 50 disamakan dengan 49
+  50:14.93, // tabel berakhir di 49, umur 50 pake value terakhir tabel
 };
 
 // riskCurveCache diisi dari BE saat init, fallback ke lokal jika gagal
@@ -26,7 +26,7 @@ function getRisk(age) {
   return RISK_FALLBACK[a] || 0.20;
 }
 
-// Hook 1981 langsung untuk bar chart edukasi
+// pake data Hook 1981 untuk bar chart edukasi
 function getHook1981(age) {
   const a = Math.max(15, Math.min(50, Math.round(age)));
   return RISK_FALLBACK[a] || 0.20;
@@ -36,15 +36,15 @@ const SYNDROMES = [
   { name: 'Sindrom Down (Trisomi 21)', aka: 'Trisomi 21', chr: '21', type: 'autosom', kar: '47,XX/XY +21', inc: '1/700', via: 'viable', nd: 'Meiosis I', age: 'Kuat', feat: 'Wajah datar, hipotonia, disabilitas intelektual ringan-sedang, defek jantung kongenital (40-50%), Brushfield spots', desc: 'Sindrom kromosom paling umum yang viable. Tiga salinan kromosom 21 memengaruhi ratusan gen. Risiko naik dari 1/1.500 di usia 20 menjadi 1/30 di usia 45.', ac: '#16a34a', featColor: '#DFFFBF', featured: true },
   { name: 'Sindrom Edwards (Trisomi 18)', aka: 'Trisomi 18', chr: '18', type: 'autosom', kar: '47,XX/XY +18', inc: '1/5.000', via: 'jarang', nd: 'Meiosis I', age: 'Kuat', feat: 'Tangan mengepal (Edwards fist), defek jantung kompleks, rocker-bottom feet, mikrosefali, overlapping fingers', desc: 'Trisomi autosom kedua paling umum. Lebih dari 90% kasus mengalami defek jantung. Median kelangsungan hidup hanya beberapa minggu.', ac: '#dc2626', featColor: '#FFC2BE', featured: true },
   { name: 'Sindrom Patau (Trisomi 13)', aka: 'Trisomi 13', chr: '13', type: 'autosom', kar: '47,XX/XY +13', inc: '1/10.000', via: 'jarang', nd: 'Meiosis I', age: 'Kuat', feat: 'Holoprosensefali, celah bibir/langit-langit, polidaktili, siklopia, defek jantung berat', desc: 'Kelainan berat otak, wajah, dan jantung. Sebagian besar bayi meninggal pada minggu pertama kehidupan, meskipun sebagian kecil dapat bertahan lebih lama dengan perawatan intensif.', ac: '#ca8a04', featColor: '#FFFEC8', featured: true },
-  { name: 'Sindrom Turner', aka: 'Monosomi X', chr: 'X', type: 'seks', kar: '45,X', inc: '1/2.500 (perempuan)', via: 'viable', nd: 'Meiosis I/II', age: 'Lemah', feat: 'Perawakan pendek, ovarium streaks, infertilitas (98%), webbed neck, koarktasio aorta, amenore primer', desc: 'Satu-satunya monosomi yang viable pada manusia. Sekitar 99% embrio 45,X gugur spontan. Hanya terjadi pada wanita.', ac: '#15803d', featColor: '#DFFFBF', featured: true },
+  { name: 'Sindrom Turner', aka: 'Monosomi X', chr: 'X', type: 'seks', kar: '45,X', inc: '1/2.500 (perempuan)', via: 'viable', nd: 'Meiosis I/II', age: 'Tidak ada', feat: 'Perawakan pendek, ovarium streaks, infertilitas (98%), webbed neck, koarktasio aorta, amenore primer', desc: 'Satu-satunya monosomi yang viable pada manusia. Sekitar 99% embrio 45,X gugur spontan. Hanya terjadi pada wanita.', ac: '#15803d', featColor: '#DFFFBF', featured: true },
   { name: 'Sindrom Klinefelter', aka: '47,XXY', chr: 'X', type: 'seks', kar: '47,XXY', inc: '1/500 (laki-laki)', via: 'viable', nd: 'Meiosis I', age: 'Sedang', feat: 'Hipogonadisme, ginekomastia, gangguan fertilitas yang umum terjadi pada sebagian besar pasien, testis kecil, tubuh tinggi, testosteron rendah, risiko osteoporosis', desc: 'Sindrom kromosom seks paling umum pada pria. Sekitar 75% tidak pernah terdiagnosis. Sering ditemukan saat konsultasi kesuburan.', ac: '#15803d', featColor: '#DFFFBF', featured: true },
   { name: 'Triple X', aka: '47,XXX', chr: 'X', type: 'seks', kar: '47,XXX', inc: '1/1.000 (perempuan)', via: 'viable', nd: 'Meiosis I/II', age: 'Lemah', feat: 'Tinggi badan di atas rata-rata, kesulitan belajar ringan, perkembangan bahasa terlambat, menstruasi biasanya normal', desc: 'Banyak wanita 47,XXX tidak pernah terdiagnosis dan memiliki gejala sangat ringan atau tanpa gejala signifikan.', ac: '#166534', featured: false },
   { name: 'Sindrom XYY', aka: '47,XYY', chr: 'Y', type: 'seks', kar: '47,XYY', inc: '1/1.000 (laki-laki)', via: 'viable', nd: 'Meiosis II', age: 'Tidak ada', feat: 'Tubuh sangat tinggi, perilaku impulsif ringan, fertil, rentan akne', desc: 'Sindrom kromosom seks dengan hubungan maternal age yang minimal dibanding trisomi autosom. Umumnya fertil dan hidup normal.', ac: '#059669', featured: false },
   { name: 'Sindrom XXXY', aka: '48,XXXY', chr: 'X', type: 'seks', kar: '48,XXXY', inc: '1/50.000 (laki-laki)', via: 'viable', nd: 'Meiosis I+II', age: 'Sedang', feat: 'Disabilitas intelektual sedang-berat, hipogonadisme, ginekomastia, wajah khas', desc: 'Varian Klinefelter lebih berat. Tiga kromosom X menyebabkan gangguan perkembangan lebih signifikan.', ac: '#15803d', featured: false },
   { name: 'Sindrom XXYY', aka: '48,XXYY', chr: 'X/Y', type: 'seks', kar: '48,XXYY', inc: '1/17.000 (laki-laki)', via: 'viable', nd: 'Meiosis I+II', age: 'Sedang', feat: 'Masalah perilaku dan temperamental, hipogonadisme, tubuh sangat tinggi, tremor halus', desc: 'Kombinasi X dan Y ekstra. Sering didiagnosis saat dewasa muda.', ac: '#15803d', featured: false },
-  { name: 'Sindrom XXXXY', aka: '49,XXXXY', chr: 'X', type: 'seks', kar: '49,XXXXY', inc: '1/85.000 (laki-laki)', via: 'viable', nd: 'Multiple non-disjunction', age: 'Sedang', feat: 'Disabilitas intelektual berat, sinostosis radioulnar, hipogonadisme, dismorfisme wajah', desc: 'Bentuk paling berat dari kelompok Klinefelter.', ac: '#166534', featured: false },
+  { name: 'Sindrom XXXXY', aka: '49,XXXXY', chr: 'X', type: 'seks', kar: '49,XXXXY', inc: '1/85.000 (laki-laki)', via: 'viable', nd: 'Multiple non-disjunction', age: 'Lenah', feat: 'Disabilitas intelektual berat, sinostosis radioulnar, hipogonadisme, dismorfisme wajah', desc: 'Bentuk paling berat dari kelompok Klinefelter.', ac: '#166534', featured: false },
   { name: 'Penta X', aka: '49,XXXXX', chr: 'X', type: 'seks', kar: '49,XXXXX', inc: '< 1/100.000 (perempuan)', via: 'jarang', nd: 'Multiple non-disjunction', age: 'Lemah', feat: 'Disabilitas intelektual berat, defek kraniofasial, kelainan jantung dan ginjal', desc: 'Lima kromosom X — kasus sangat langka. Prognosis buruk.', ac: '#b91c1c', featured: false },
-  { name: 'Trisomi 22', aka: 'Trisomi 22', chr: '22', type: 'autosom', kar: '47,XX/XY +22', inc: 'sangat jarang pada kelahiran hidup', via: 'jarang', nd: 'Bervariasi', age: 'Lemah', feat: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual (mosaik)', desc: 'Trisomi penuh tidak viable. Kasus mosaik bisa bertahan dengan gejala bervariasi.', ac: '#166534', featured: false },
+  { name: 'Trisomi 22', aka: 'Trisomi 22', chr: '22', type: 'autosom', kar: '47,XX/XY +22', inc: 'sangat jarang pada kelahiran hidup', via: 'jarang', nd: 'Bervariasi', age: 'Sedang', feat: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual (mosaik)', desc: 'Trisomi penuh tidak viable. Kasus mosaik bisa bertahan dengan gejala bervariasi.', ac: '#166534', featured: false },
   { name: 'Sindrom Down Mosaik', aka: 'Mosaik Trisomi 21', chr: '21', type: 'mosaik', kar: '46/47,+21 [mosaik]', inc: '~1-2% kasus Trisomi 21', via: 'viable', nd: 'Meiosis I+mitosis', age: 'Sedang', feat: 'Fenotip lebih ringan dari Trisomi 21 penuh; IQ rata-rata lebih tinggi; variabilitas gejala besar', desc: 'Sebagian sel normal, sebagian trisomi. Dampak klinis tergantung proporsi sel aneuploid.', ac: '#16a34a', featured: false },
   { name: 'Sindrom Turner Mosaik', aka: 'Mosaik 45,X', chr: 'X', type: 'mosaik', kar: '45,X/46,XX [mosaik]', inc: '1/5.000 (perempuan)', via: 'viable', nd: 'Meiosis/mitosis', age: 'Lemah', feat: 'Gejala lebih ringan dari Turner klasik; sebagian kecil masih bisa hamil alami', desc: 'Prognosis reproduksi lebih baik. Bentuk paling umum dari Turner.', ac: '#15803d', featured: false },
   { name: 'Sindrom Klinefelter Mosaik', aka: 'Mosaik 47,XXY', chr: 'X', type: 'mosaik', kar: '46,XY/47,XXY [mosaik]', inc: '1/10.000 (laki-laki)', via: 'viable', nd: 'Meiosis/mitosis', age: 'Sedang', feat: 'Sebagian pria bisa fertil; gejala lebih ringan dari Klinefelter klasik', desc: 'Mosaik Klinefelter dengan prognosis reproduksi lebih baik.', ac: '#15803d', featured: false },
@@ -265,7 +265,7 @@ function renderBars() {
             padding: { bottom: 8 },
           },
           afterBuildTicks: axis => {
-            axis.ticks = [0, 0.3, 0.6, 0.9, 1.2, 1.5, 2, 3, 5, 10, 15].map(v => ({ value: v }));
+            axis.ticks = [0.1, 0.3, 0.6, 0.9, 1.2, 1.5, 2, 3, 5, 10, 15].map(v => ({ value: v }));
           },
           ticks: {
             color: '#4a6e98',
@@ -279,12 +279,12 @@ function renderBars() {
 }
 
 async function initEdu() {
-  // Fetch kurva risiko dari BE, populate cache supaya bar chart pakai data real
+  // ambil data risk curve dari backend dulu
   try {
     const res = await getRiskCurve(15, 50);
     riskCurveCache = res.curve;
   } catch {
-    // BE offline, bar chart tetap tampil pakai fallback lokal
+    // jika backend offline, fallback ke lokal kalo error
   }
 
   renderSpotlight();
