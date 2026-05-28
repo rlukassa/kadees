@@ -226,19 +226,26 @@ ETHNICITIES = {
 #   Sumber estimasi: Forabosco A et al. (2009). Eur J Hum Genet, 17:897-903.
 #                   https://doi.org/10.1038/ejhg.2008.246
 #
-# [XYY 47,XYY — 0.003]
-#   Hook 1981 Tabel 1 kolom "XYY": ~0.5/1000 (konstan di semua usia maternal,
-#   karena nondisjunction XYY terjadi di Meiosis II paternal, tidak terkait usia ibu).
-#   Relatif terhadap Total, proporsinya kecil → estimasi ~0.3%.
-#   Sumber: Hook 1981 https://pubmed.ncbi.nlm.nih.gov/6455611/
+# [XYY 47,XYY — DIHAPUS]
+#   Sindrom XYY TIDAK dimasukkan karena nondisjunction kromosom Y terjadi
+#   di Meiosis II PATERNAL (dari sperma), bukan dari oosit ibu.
+#   Karena dataset ini berbasis usia maternal (maternal age risk), XYY tidak
+#   relevan dan tidak seharusnya dimodelkan dari risiko usia ibu.
+#   Hook 1981 Tabel 1 pun menunjukkan XYY ~0.5/1000 KONSTAN di semua usia
+#   maternal, mengkonfirmasi tidak ada hubungan dengan usia ibu.
+#
+# Normalisasi bobot setelah XYY dihapus:
+#   Bobot asli (tanpa XYY) berjumlah 0.997. Setiap nilai dinormalisasi
+#   (dibagi 0.997) agar total = 1.000, sehingga _weighted_choice() bekerja benar.
+#   Perubahan per nilai < 0.5%, tidak signifikan secara biologis.
 SYNDROME_WEIGHTS = {
-    "Trisomi 21 (Sindrom Down)":    0.626,  # Hook 1981 + Morris 2002: ~60-65% dari semua trisomi live birth
-    "Trisomi 18 (Sindrom Edwards)": 0.200,  # Savva 2010 + Hook 1981: ~20% estimasi dari total
-    "Trisomi 13 (Sindrom Patau)":   0.100,  # Savva 2010: ~1/2 dari T18, estimasi ~10%
-    "Sindrom Turner (45,X)":        0.044,  # ⚠ Estimasi — Hook 1981 <0.1/1000; ACMG 2016 = prevalensi kehamilan bukan live birth
-    "Sindrom Klinefelter (47,XXY)": 0.020,  # Hook 1981 XXY ~0.5/1000; estimasi ~2% dari total aneuploidi
-    "Trisomi X (47,XXX)":           0.007,  # ⚠ Estimasi — Hook 1981 mengecualikan XXX; basis Forabosco 2009
-    "Sindrom XYY (47,XYY)":         0.003,  # Hook 1981 XYY ~0.5/1000; estimasi ~0.3% dari total
+    "Trisomi 21 (Sindrom Down)":    0.628,  # Hook 1981 + Morris 2002 (dinormalisasi dari 0.626)
+    "Trisomi 18 (Sindrom Edwards)": 0.201,  # Savva 2010 + Hook 1981 (dinormalisasi dari 0.200)
+    "Trisomi 13 (Sindrom Patau)":   0.100,  # Savva 2010 (dinormalisasi dari 0.100)
+    "Sindrom Turner (45,X)":        0.044,  # ⚠ Estimasi live birth — Hook 1981 + ACMG 2016 konteks
+    "Sindrom Klinefelter (47,XXY)": 0.020,  # Hook 1981 kolom XXY (dinormalisasi dari 0.020)
+    "Trisomi X (47,XXX)":           0.007,  # ⚠ Estimasi — Forabosco 2009; Hook 1981 mengecualikan XXX
+    # "Sindrom XYY (47,XYY)": DIHAPUS — nondisjunction paternal, tidak terkait usia ibu
 }
 
 KARYOTYPE_SYNDROME_MAP = {
@@ -248,7 +255,7 @@ KARYOTYPE_SYNDROME_MAP = {
     "Sindrom Turner (45,X)":        ("45,X",       "45,X"),
     "Sindrom Klinefelter (47,XXY)": ("47,XXY",     "47,XXY"),
     "Trisomi X (47,XXX)":           ("47,XXX",     "47,XXX"),
-    "Sindrom XYY (47,XYY)":         ("47,XYY",     "47,XYY"),
+    # XYY dihapus — nondisjunction paternal, tidak relevan untuk model usia ibu
 }
 
 MEIOSIS_STAGE_PROBS = {
