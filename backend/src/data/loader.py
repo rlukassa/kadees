@@ -85,7 +85,7 @@ class DatasetLoader:
             for row in reader:
                 try:
                     age  = int(float(row["maternal_age"]))
-                    risk = float(row["all_trisomy_risk"])
+                    risk = float(row["all_chromosome_risk"])
                     resultMap[age] = risk
                 except (ValueError, KeyError):
                     continue
@@ -129,7 +129,7 @@ class DatasetLoader:
                         except ValueError:
                             parsedRow[camelKey] = value
                     elif key in ("maternal_age", "trisomy_21_risk", "trisomy_18_risk",
-                                 "trisomy_13_risk", "all_trisomy_risk"):
+                                 "trisomy_13_risk", "all_chromosome_risk"):
                         try:
                             parsedRow[camelKey] = float(value)
                         except ValueError:

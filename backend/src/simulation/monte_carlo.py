@@ -95,22 +95,37 @@ class MeiosisMonteCarloSimulator:
 
         return pairs
 
-    def _simulateMeiosis(self, pairs: List[ChromosomePair]) -> Gamete:
+    def _simulateMeiosis(self, pairs: List[ChromosomePair]):
         gameteChromosomes = []
         ndMeiosisI = False
         ndMeiosisII = False
 
-        for pair in pairs:
-            pNd = self._riskProfile.totalRisk
-            roll = self._rng.random()
+        # Probabilitas nondisjunction dihitung sekali per pembentukan gamet.
+        # Sebelumnya sempat di-roll untuk setiap kromosom sehingga
+        # risiko total jadi jauh lebih besar dari seharusnya.
+        ndOccurred = self._rng.random() < self._riskProfile.totalRisk
 
-            if roll < pNd:
+        # Cari kromosom target jika simulasi memang menghasilkan ND.
+        # Kalau target tidak ditemukan, pilih pasangan secara acak.
+        ndPairIndex = None
+        if ndOccurred:
+            for i, pair in enumerate(pairs):
+                if pair.pairNumber == self.config.targetChromosome:
+                    ndPairIndex = i
+                    break
+            if ndPairIndex is None:
+                ndPairIndex = self._rng.randint(0, len(pairs) - 1)
+
+        for i, pair in enumerate(pairs):
+            if ndOccurred and i == ndPairIndex:
+                # Nondisjunction meiosis I
                 if self._rng.random() < MEIOSIS_I_FRACTION:
                     pair.paternal.markNondisjunction(1)
                     pair.maternal.markNondisjunction(1)
                     gameteChromosomes.extend([pair.paternal, pair.maternal])
                     ndMeiosisI = True
                 else:
+                    # Nondisjunction meiosis II
                     chosen = self._rng.choice([pair.paternal, pair.maternal])
                     duplicate = Chromosome(
                         number=chosen.number, chrType=chosen.chrType,
