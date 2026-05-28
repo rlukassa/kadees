@@ -1,38 +1,38 @@
 syndrome_name,chromosome_affected,type,aneuploid_karyotype,incidence_per_live_birth,viability,primary_nd_stage,maternal_age_effect,clinical_features
-Trisomi 1,1,Trisomi Autosom,47 XX/XY +1,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal pada tahap embrio awal; tidak pernah dilaporkan pada neonatus hidup"
-Trisomi 2,2,Trisomi Autosom,47 XX/XY +2,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; ditemukan pada aborsi spontan tahap awal; mosaik sangat langka"
-Trisomi 3,3,Trisomi Autosom,47 XX/XY +3,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal prenatal; malformasi berat seluruh sistem organ"
-Trisomi 4,4,Trisomi Autosom,47 XX/XY +4,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; mosaik sangat jarang dilaporkan dengan multiple anomali kongenital"
-Trisomi 5,5,Trisomi Autosom,47 XX/XY +5,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal prenatal; cacat jantung dan otak berat"
-Trisomi 6,6,Trisomi Autosom,47 XX/XY +6,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; ditemukan pada abortus spontan; mosaik eksklusif"
-Trisomi 7,7,Trisomi Autosom,47 XX/XY +7,Sangat jarang (tidak viabel),Mosaik viable,Meiosis I,Tidak ada,"Mosaik: Silver-Russell syndrome-like; IUGR; dysmorphic features"
-Trisomi 8 (Warkany 2),8,Trisomi Autosom,47 XX/XY +8,1/25000 (mosaik),Mosaik viable,Meiosis I/II,Lemah,"Sindrom Warkany 2: disabilitas intelektual sedang; wajah dismorfik; tulang rusuk abnormal; kelainan sendi"
-Trisomi 9,9,Trisomi Autosom,47 XX/XY +9,Sangat jarang (tidak viabel),Tidak viabel / Mosaik,Meiosis I,Tidak ada,"Letal; mosaik: microcephaly; cacat jantung kongenital; dismorfik berat"
-Trisomi 10,10,Trisomi Autosom,47 XX/XY +10,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal prenatal; ditemukan pada abortus spontan trimester pertama"
-Trisomi 11,11,Trisomi Autosom,47 XX/XY +11,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; belum dilaporkan pada neonatus hidup; hanya dalam aborsi spontan"
-Trisomi 12,12,Trisomi Autosom,47 XX/XY +12,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; mosaik sangat langka; anomali perkembangan multipel"
-Trisomi 13 (Sindrom Patau),13,Trisomi Autosom,47 XX/XY +13,1/10000-16000,Viabel (singkat),Meiosis I,Kuat,"Cacat jantung kongenital; holoprosensefali; polidaktili; bibir sumbing; median survival 7-10 hari"
-Trisomi 14,14,Trisomi Autosom,47 XX/XY +14,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; mosaik: IUGR; skoliosis; anomali wajah"
-Trisomi 15,15,Trisomi Autosom,47 XX/XY +15,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; Angelman/Prader-Willi jika mosaik dengan disomi uniparental"
-Trisomi 16,16,Trisomi Autosom,47 XX/XY +16,1/300 (abortus spontan),Tidak viabel,Meiosis I,Kuat,"Penyebab trisomi paling umum pada keguguran spontan; tidak viable penuh; mosaik sangat jarang"
-Trisomi 17,17,Trisomi Autosom,47 XX/XY +17,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal prenatal; belum ada kasus neonatus hidup terdokumentasi"
-Trisomi 18 (Sindrom Edwards),18,Trisomi Autosom,47 XX/XY +18,1/3000-8000,Viabel (singkat),Meiosis I,Kuat,"Cacat jantung berat; tangan overlapping; kepala kecil; IUGR; 50% meninggal dalam minggu pertama"
-Trisomi 19,19,Trisomi Autosom,47 XX/XY +19,Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal prenatal; ditemukan dalam abortus spontan awal"
-Trisomi 20,20,Trisomi Autosom,47 XX/XY +20,Sangat jarang (tidak viabel),Mosaik viable,Meiosis I/II,Lemah,"Mosaik: sindrom Mosaik Trisomi 20; biasanya ditemukan saat amniosentesis; fenotip ringan"
-Trisomi 21 (Sindrom Down),21,Trisomi Autosom,47 XX/XY +21,1/700-1000,Viabel,Meiosis I/II,Sangat Kuat,"Disabilitas intelektual ringan-sedang; wajah khas; hipotonia; risiko ASD; penyakit jantung kongenital 40%"
-Trisomi 22,22,Trisomi Autosom,47 XX/XY +22,1/30000 (mosaik viabel),Mosaik viable,Meiosis I/II,Sedang,"Mosaik: Cat Eye Syndrome; koloboma iris; preauricular pits; atresia ani; cacat jantung"
-Monosomi X (Sindrom Turner),X,Monosomi Seks,45 X,1/2500 kelahiran perempuan,Viabel,Meiosis I/II,Lemah,"Perawakan pendek; gonadal dysgenesis; infertilitas; pterygium colli; coarctasi aorta; 45-50% dengan mosaik"
-Sindrom Klinefelter,X/Y,Trisomi Seks,47 XXY,1/500-1000 kelahiran laki-laki,Viabel,Meiosis I/II,Sedang,"Hipogonadisme; azoospermia; ginekomastia; testis kecil; IQ normal-borderline; risiko disleksia tinggi"
-Trisomi X (Triple X),X,Trisomi Seks,47 XXX,1/1000 kelahiran perempuan,Viabel,Meiosis I,Sedang,"Perawakan tinggi; perkembangan bicara terlambat; kesulitan belajar; fertilitas biasanya normal; fenotip ringan"
-Sindrom XYY (Jacob),Y,Disomi Seks,47 XYY,1/1000 kelahiran laki-laki,Viabel,Meiosis II,Tidak ada,"Perawakan sangat tinggi; fertilitas normal; risiko perilaku impulsif; IQ normal; sering tidak terdiagnosis"
-Tetrasomi X (48 XXXX),X,Tetrasomi Seks,48 XXXX,1/50000 kelahiran perempuan,Viabel,Meiosis I,Sedang,"Disabilitas intelektual sedang; malformasi wajah; hipotonia; komplikasi jantung"
-Sindrom XXXY (48 XXXY),X/Y,Tetrasomi Seks,48 XXXY,1/50000 kelahiran laki-laki,Viabel,Meiosis I,Sedang,"Disabilitas intelektual sedang-berat; hipogonadisme berat; dismorfik wajah; hipotonia"
-Sindrom XXYY (48 XXYY),X/Y,Tetrasomi Seks,48 XXYY,1/18000-40000 laki-laki,Viabel,Meiosis I/II,Lemah,"Perawakan sangat tinggi; hipogonadisme; kesulitan belajar; risiko sindrom kaki gelisah"
-Sindrom XXXXY (49 XXXXY),X/Y,Pentasomi Seks,49 XXXXY,1/85000 kelahiran laki-laki,Viabel,Meiosis I,Tidak ada,"Disabilitas intelektual berat; hipotonia parah; radioulnar synostosis; cacat jantung kongenital"
-Pentasomi X (49 XXXXX),X,Pentasomi Seks,49 XXXXX,1/85000-100000 perempuan,Viabel,Meiosis I,Tidak ada,"Disabilitas intelektual berat; mikrosefali; cacat jantung; infertilitas; fenotip mirip Down parah"
-Mosaik Trisomi 21,21,Trisomi Autosom Mosaik,"46 XX/47 XX +21",1/2000-3000,Viabel,Meiosis I/II atau Mitosis,Kuat,"Fenotip Down lebih ringan dari trisomi penuh; kecerdasan lebih tinggi; proporsi sel aneuploid menentukan keparahan"
-Mosaik Turner,X,Monosomi Seks Mosaik,"45 X/46 XX",1/2000-5000 perempuan,Viabel,Meiosis I/II atau Mitosis,Tidak ada,"Manifestasi Turner lebih ringan; sebagian fertilitas normal; perawakan pendek ringan; amenorrhea primer"
-Mosaik Klinefelter,X/Y,Trisomi Seks Mosaik,"46 XY/47 XXY",1/2000-3000 laki-laki,Viabel,Meiosis I/II atau Mitosis,Lemah,"Fenotip Klinefelter ringan; sebagian fungsi testis mungkin normal; sering tidak terdiagnosis"
-Tetrasomi 12p (Pallister-Killian),12,Tetrasomi Autosom Mosaik,48 XX/XY +i(12p),1/20000,Mosaik viable,Mitosis,Tidak ada,"Disabilitas intelektual berat; hipertonia; rambut temporoparietal jarang; pigmentasi kulit abnormal"
-Isodisomi Uniparental 15,15,UPD Autosom,"46 XX/XY (UPD15)",1/15000-25000,Viabel,Meiosis I/II,Tidak ada,"Prader-Willi (UPD paternal) atau Angelman (UPD maternal); bergantung pada imprinting genomik"
-Monosomi 21 Parsial,21,Monosomi Autosom Parsial,46 XX/XY del(21),Sangat jarang,Mosaik viable,Meiosis I/II,Tidak ada,"Disabilitas intelektual; mikrosefali; cacat jantung; fenotip bervariasi tergantung segmen yang hilang"
+Trisomi 1,1,Trisomi Autosom,"47,XX,+1 / 47,XY,+1",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal pada tahap embrio awal; tidak pernah dilaporkan pada neonatus hidup
+Trisomi 2,2,Trisomi Autosom,"47,XX,+2 / 47,XY,+2",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal; ditemukan pada aborsi spontan tahap awal; mosaik sangat langka
+Trisomi 3,3,Trisomi Autosom,"47,XX,+3 / 47,XY,+3",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal prenatal; malformasi berat seluruh sistem organ
+Trisomi 4,4,Trisomi Autosom,"47,XX,+4 / 47,XY,+4",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal; mosaik sangat jarang dilaporkan dengan multiple anomali kongenital
+Trisomi 5,5,Trisomi Autosom,"47,XX,+5 / 47,XY,+5",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal prenatal; cacat jantung dan otak berat
+Trisomi 6,6,Trisomi Autosom,"47,XX,+6 / 47,XY,+6",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal; ditemukan pada abortus spontan; mosaik eksklusif
+Trisomi 7,7,Trisomi Autosom,"47,XX,+7 / 47,XY,+7",Sangat jarang (tidak viabel),Mosaik viable,Meiosis I,Tidak ada,"Mosaik: pigmentasi kulit mengikuti garis Blaschko, body asymmetry, IUGR, dan dapat disertai maternal UPD7 dengan fenotip mirip Silver-Russell syndrome"
+Trisomi 8 (Warkany 2),8,Trisomi Autosom,"47,XX,+8 / 47,XY,+8",1/25000 (mosaik),Mosaik viable,Meiosis I/II,Tidak ada,Sindrom Warkany 2: disabilitas intelektual sedang; wajah dismorfik; tulang rusuk abnormal; kelainan sendi
+Trisomi 9,9,Trisomi Autosom,"47,XX,+9 / 47,XY,+9",Sangat jarang (tidak viabel),Tidak viabel / Mosaik,Meiosis I,Tidak ada,Letal; mosaik: microcephaly; cacat jantung kongenital; dismorfik berat
+Trisomi 10,10,Trisomi Autosom,"47,XX,+10 / 47,XY,+10",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal prenatal; ditemukan pada abortus spontan trimester pertama
+Trisomi 11,11,Trisomi Autosom,"47,XX,+11 / 47,XY,+11",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal; belum dilaporkan pada neonatus hidup; hanya dalam aborsi spontan
+Trisomi 12,12,Trisomi Autosom,"47,XX,+12 / 47,XY,+12",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal; mosaik sangat langka; anomali perkembangan multipel
+Trisomi 13 (Sindrom Patau),13,Trisomi Autosom,"47,XX,+13 / 47,XY,+13",1/10000-16000,Viabel (singkat),Meiosis I,Kuat,Cacat jantung kongenital; holoprosensefali; polidaktili; bibir sumbing; median survival 7-10 hari
+Trisomi 14,14,Trisomi Autosom,"47,XX,+14 / 47,XY,+14",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal; mosaik: IUGR; skoliosis; anomali wajah
+Trisomi 15,15,Trisomi Autosom,"47,XX,+15 / 47,XY,+15",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,"Letal; trisomy rescue dapat menghasilkan UPD15: maternal UPD15 menyebabkan Prader-Willi syndrome, paternal UPD15 menyebabkan Angelman syndrome"
+Trisomi 16,16,Trisomi Autosom,"47,XX,+16 / 47,XY,+16",1/300 (abortus spontan),Tidak viabel,Meiosis I,Kuat,Penyebab trisomi paling umum pada keguguran spontan; tidak viable penuh; mosaik sangat jarang
+Trisomi 17,17,Trisomi Autosom,"47,XX,+17 / 47,XY,+17",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal prenatal; belum ada kasus neonatus hidup terdokumentasi
+Trisomi 18 (Sindrom Edwards),18,Trisomi Autosom,"47,XX,+18 / 47,XY,+18",1/6000-8000,Viabel (singkat),Meiosis I,Kuat,Cacat jantung berat; tangan overlapping; kepala kecil; IUGR; 50% meninggal dalam minggu pertama
+Trisomi 19,19,Trisomi Autosom,"47,XX,+19 / 47,XY,+19",Sangat jarang (tidak viabel),Tidak viabel,Meiosis I,Tidak ada,Letal prenatal; ditemukan dalam abortus spontan awal
+Trisomi 20,20,Trisomi Autosom,"47,XX,+20 / 47,XY,+20",Sangat jarang (tidak viabel),Mosaik viable,Meiosis I/II,Lemah,"Mosaik trisomi 20 memiliki fenotip sangat bervariasi; sebagian individu normal, sebagian mengalami keterlambatan perkembangan dan anomali kongenital ringan; sering terdeteksi saat amniosentesis"
+Trisomi 21 (Sindrom Down),21,Trisomi Autosom,"47,XX,+21 / 47,XY,+21",1/700-1000,Viabel,Meiosis I/II,Sangat Kuat,Disabilitas intelektual ringan-sedang; wajah khas; hipotonia; risiko ASD; penyakit jantung kongenital 40%
+Trisomi 22,22,Trisomi Autosom,"47,XX,+22 / 47,XY,+22",1/30000 (mosaik viabel),Mosaik viable,Meiosis I/II,Sedang,Mosaik: pertumbuhan terhambat prenatal/postnatal; disabilitas intelektual ringan-berat; hemiatrofi; anomali kraniofasial; pigmentasi kulit abnormal; cacat jantung
+Monosomi X (Sindrom Turner),X,Monosomi Seks,"45,X",1/2500 kelahiran perempuan,Viabel,Meiosis I/II,Tidak ada,Perawakan pendek; gonadal dysgenesis; infertilitas; pterygium colli; coarctasi aorta; 45-50% dengan mosaik
+Sindrom Klinefelter,X/Y,Trisomi Seks,"47,XXY",1/500-1000 kelahiran laki-laki,Viabel,Meiosis I/II,Sedang,Hipogonadisme; azoospermia; ginekomastia; testis kecil; IQ normal-borderline; risiko disleksia tinggi
+Trisomi X (Triple X),X,Trisomi Seks,"47,XXX",1/1000 kelahiran perempuan,Viabel,Meiosis I,Sedang,Perawakan tinggi; perkembangan bicara terlambat; kesulitan belajar; fertilitas biasanya normal; fenotip ringan
+Sindrom XYY (Jacob),Y,Trisomi Seks,"47,XYY",1/1000 kelahiran laki-laki,Viabel,Meiosis II,Tidak ada,Perawakan sangat tinggi; fertilitas normal;  kadang terkait kesulitan belajar dan regulasi perilaku; IQ normal; sering tidak terdiagnosis
+Tetrasomi X (48 XXXX),X,Tetrasomi Seks,"48,XXXX",1/50000 kelahiran perempuan,Viabel,Meiosis I,Sedang,Disabilitas intelektual sedang; malformasi wajah; hipotonia; komplikasi jantung
+Sindrom XXXY (48 XXXY),X/Y,Tetrasomi Seks,"48,XXXY",1/50000 kelahiran laki-laki,Viabel,Meiosis I,Sedang,Disabilitas intelektual sedang-berat; hipogonadisme berat; dismorfik wajah; hipotonia
+Sindrom XXYY (48 XXYY),X/Y,Tetrasomi Seks,"48,XXYY",1/18000-40000 laki-laki,Viabel,Meiosis I/II,Lemah,Perawakan sangat tinggi; hipogonadisme; kesulitan belajar; risiko sindrom kaki gelisah
+Sindrom XXXXY (49 XXXXY),X/Y,Pentasomi Seks,"49,XXXXY",1/85000 kelahiran laki-laki,Viabel,Meiosis I,Tidak ada,Disabilitas intelektual berat; hipotonia parah; radioulnar synostosis; cacat jantung kongenital
+Pentasomi X (49 XXXXX),X,Pentasomi Seks,"49,XXXXX",1/85000-100000 perempuan,Viabel,Meiosis I,Tidak ada,Disabilitas intelektual berat; mikrosefali; cacat jantung; infertilitas; fenotip mirip Down parah
+Mosaik Trisomi 21,21,Trisomi Autosom Mosaik,"46,XX/47,XX,+21",1/2000-3000,Viabel,Meiosis I/II atau Mitosis,Sedang,Fenotip Down lebih ringan dari trisomi penuh; kecerdasan lebih tinggi; proporsi sel aneuploid menentukan keparahan
+Mosaik Turner,X,Monosomi Seks Mosaik,"45,X/46,XX",1/2000-5000 perempuan,Viabel,Meiosis I/II atau Mitosis,Tidak ada,Manifestasi Turner lebih ringan; sebagian fertilitas normal; perawakan pendek ringan; amenorrhea primer
+Mosaik Klinefelter,X/Y,Trisomi Seks Mosaik,"46,XY/47,XXY",1/2000-3000 laki-laki,Viabel,Meiosis I/II atau Mitosis,Lemah,Fenotip Klinefelter ringan; sebagian fungsi testis mungkin normal; sering tidak terdiagnosis
+Tetrasomi 12p (Pallister-Killian),12,Tetrasomi Autosom Mosaik,"48,XX,+i(12p) / 48,XY,+i(12p)",1/20000,Mosaik viable,Mitosis,Tidak ada,Disabilitas intelektual berat; hipotonia; rambut temporoparietal jarang; pigmentasi kulit abnormal
+Disomi Uniparental 15,15,UPD Autosom,"46,XX(UPD15) / 46,XY(UPD15)",1/15000-25000,Viabel,Meiosis I/II,Tidak ada,Maternal UPD15 berasosiasi dengan Prader-Willi syndrome; paternal UPD15 berasosiasi dengan Angelman syndrome; bergantung pada imprinting genomik
+Monosomi 21 Parsial,21,Monosomi Autosom Parsial,"46,XX,del(21) / 46,XY,del(21)",Sangat jarang,Mosaik viable,Meiosis I/II,Tidak ada,Disabilitas intelektual; mikrosefali; cacat jantung; fenotip bervariasi tergantung segmen yang hilang
