@@ -11,7 +11,6 @@ const RISK_FALLBACK = {
   35:.56, 36:.67, 37:.81, 38:.95, 39:1.24,
   40:1.58, 41:2.05, 42:2.55, 43:3.26, 44:4.18,
   45:5.37, 46:6.89, 47:8.91, 48:11.50, 49:14.93,
-  50:14.93, // tabel berakhir di 49, umur 50 pake value terakhir tabel
 };
 
 // riskCurveCache diisi dari BE saat init, fallback ke lokal jika gagal

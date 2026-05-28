@@ -29,13 +29,12 @@ MATERNAL_AGE_RISK_TABLE: Dict[int, float] = {
     15: 0.0022, 16: 0.0021, 17: 0.0020, 18: 0.0019, 19: 0.0018,
     20: 0.0019, 21: 0.0019, 22: 0.0020, 23: 0.0020, 24: 0.0021,
     # Usia dewasa muda (25-34): risiko meningkat bertahap
-    25: 0.0021, 26: 0.0022, 27: 0.0023, 28: 0.0023, 29: 0.0024,
+    25: 0.0021, 26: 0.0021, 27: 0.0022, 28: 0.0023, 29: 0.0024,
     30: 0.0026, 31: 0.0026, 32: 0.0031, 33: 0.0035, 34: 0.0041,
     # AMA (Advanced Maternal Age) ≥35: peningkatan eksponensial
     35: 0.0056, 36: 0.0067, 37: 0.0081, 38: 0.0095, 39: 0.0124,
     40: 0.0158, 41: 0.0205, 42: 0.0255, 43: 0.0326, 44: 0.0418,
     45: 0.0537, 46: 0.0689, 47: 0.0891, 48: 0.1150, 49: 0.1493,
-    50: 0.1493,
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -129,7 +128,7 @@ class MaternalAgeRiskModel:
             riskRatioToBase=ratio,
         )
 
-    def getRiskCurve(self, ageRange: Tuple[int, int] = (15, 50)) -> List[Dict]:
+    def getRiskCurve(self, ageRange: Tuple[int, int] = (15, 49)) -> List[Dict]:
         return [
             self.getRiskProfile(age).toDict()
             for age in range(ageRange[0], ageRange[1] + 1)

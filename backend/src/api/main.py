@@ -41,8 +41,8 @@ class SimulationRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     maternalAge: int = Field(
-        ..., ge=15, le=50, alias="maternal_age",
-        description="Usia ibu (15–50 tahun)",
+        ..., ge=15, le=49, alias="maternal_age",
+        description="Usia ibu (15–490 tahun)",
         json_schema_extra={"example": 30},
     )
     nSimulations: int = Field(
@@ -68,7 +68,7 @@ async def root():
 @app.get("/api/risk/curve", tags=["Risk Model"])
 async def getRiskCurve(
     ageMin: int = Query(15, ge=15, le=49, alias="age_min", description="Usia minimum kurva"),
-    ageMax: int = Query(50, ge=16, le=50, alias="age_max", description="Usia maksimum kurva"),
+    ageMax: int = Query(49, ge=16, le=49, alias="age_max", description="Usia maksimum kurva"),
 ):
 
     if ageMin >= ageMax:
@@ -79,8 +79,8 @@ async def getRiskCurve(
 
 @app.get("/api/risk/compare", tags=["Risk Model"])
 async def compareAges(
-    ageA: int = Query(..., ge=15, le=50, alias="age_a", description="Usia pertama"),
-    ageB: int = Query(..., ge=15, le=50, alias="age_b", description="Usia kedua"),
+    ageA: int = Query(..., ge=15, le=49, alias="age_a", description="Usia pertama"),
+    ageB: int = Query(..., ge=15, le=49, alias="age_b", description="Usia kedua"),
 ):
     comparison = riskModel.compareAges(ageA, ageB)
     return comparison
@@ -88,7 +88,7 @@ async def compareAges(
 
 @app.get("/api/risk/{maternalAge}", tags=["Risk Model"])
 async def getRiskProfile(maternalAge: int):
-    if not (15 <= maternalAge <= 50):
+    if not (15 <= maternalAge <= 49):
         raise HTTPException(status_code=400, detail="Usia harus antara 15–50 tahun.")
     profile = riskModel.getRiskProfile(maternalAge)
     return profile.toDict()
@@ -128,7 +128,7 @@ async def runSimulation(request: SimulationRequest):
 @app.get("/api/simulate/sweep", tags=["Simulation"])
 async def runAgeSweep(
     ageMin: int = Query(20, ge=15, le=49, alias="age_min", description="Usia awal sweep"),
-    ageMax: int = Query(45, ge=16, le=50, alias="age_max", description="Usia akhir sweep"),
+    ageMax: int = Query(45, ge=16, le=49, alias="age_max", description="Usia akhir sweep"),
     nSim:   int = Query(1000, ge=100, le=10_000, alias="n_sim", description="Iterasi per usia"),
 ):
     if ageMin >= ageMax:
@@ -141,9 +141,9 @@ async def runAgeSweep(
 
 @app.get("/api/stats/analyze", tags=["Statistics"])
 async def analyzeAge(
-    age:        int = Query(..., ge=15, le=50, description="Usia maternal yang dianalisis"),
+    age:        int = Query(..., ge=15, le=49, description="Usia maternal yang dianalisis"),
     nSim:       int = Query(10_000, ge=1000, le=100_000, alias="n_sim", description="Jumlah iterasi"),
-    baseline:   int = Query(25, ge=15, le=50, description="Usia baseline untuk Relative Risk"),
+    baseline:   int = Query(25, ge=15, le=49, description="Usia baseline untuk Relative Risk"),
     confidence: float = Query(0.95, ge=0.90, le=0.99, description="Level kepercayaan CI (0.90/0.95/0.99)"),
 ):
 

@@ -9,7 +9,7 @@ export async function getRiskProfile(age) {
 }
 
 // untuk ambil data kurva risk
-export async function getRiskCurve(ageMin = 15, ageMax = 50) {
+export async function getRiskCurve(ageMin = 15, ageMax = 49) {
   const res = await fetch(`${BASE_URL}/api/risk/curve?age_min=${ageMin}&age_max=${ageMax}`);
   if (!res.ok) throw new Error(`API Error ${res.status}`);
   return res.json();
