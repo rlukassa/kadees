@@ -1,5 +1,5 @@
 /* ========================================
-   MEIOVIS — PROFESSIONAL MONOCHROME THEME
+   COLORS
    ======================================== */
 
 :root {
@@ -96,9 +96,9 @@ html, body {
    ======================================== */
 #sim-layout {
   display: grid;
-  grid-template-columns: 280px 1fr 268px;
+  grid-template-columns: 280px 1fr 280px;
   height: 100vh;
-  padding-top: 52px;
+  padding-top: 48px;
   overflow: hidden;
 }
 
@@ -109,10 +109,11 @@ html, body {
 #panel-left, #panel-right {
   background: var(--white);
   overflow-y: auto;
-  padding: 14px;
+  overflow-x: hidden;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   scrollbar-width: thin;
   scrollbar-color: var(--ink-ghost) var(--surface);
 }
@@ -127,17 +128,17 @@ html, body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 16px;
+  padding: 10px;
 }
 
 .card-label {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--ink-muted);
-  margin-bottom: 14px;
-  padding-bottom: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -145,17 +146,17 @@ html, body {
 /* ========================================
    FORM CONTROLS
    ======================================== */
-.field { margin-bottom: 16px; }
+.field { margin-bottom: 10px; }
 
 .field-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 label {
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 500;
   color: var(--ink-soft);
 }
@@ -215,10 +216,10 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   background: var(--white);
   border: 1px solid var(--border);
   color: var(--ink);
-  padding: 8px 32px 8px 10px;
+  padding: 5px 28px 5px 8px;
   border-radius: 6px;
   font-family: inherit;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   cursor: pointer;
   outline: none;
   appearance: none;
@@ -239,14 +240,14 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 0;
+  gap: 6px;
+  padding: 8px 0;
   border: none;
   border-radius: 6px;
   background: var(--ink);
   color: var(--white);
   font-family: inherit;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 600;
   letter-spacing: 0.2px;
   cursor: pointer;
@@ -261,14 +262,14 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 .btn-secondary {
   width: 100%;
-  margin-top: 8px;
-  padding: 10px 0;
+  margin-top: 4px;
+  padding: 6px 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: transparent;
   color: var(--ink-muted);
   font-family: inherit;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -286,26 +287,26 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .gauge-wrap {
   display: flex;
   justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
 }
 
 .risk-rows {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
 .risk-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   color: var(--ink-muted);
 }
 
 .risk-val {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--ink);
 }
@@ -740,7 +741,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 
 /* ========================================
-   SPOTLIGHT CARDS — CAROUSEL DESIGN
+   SPOTLIGHT CARDS
    ======================================== */
 #spotlight-section {
   position: relative;
@@ -847,13 +848,13 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   font-style: italic;
 }
 
-/* Incidence Box - Prominent */
+/* Incidence Box */
 .spot-inc {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 14px;
-  padding: 12px 14px;
+  padding: 14px 18px;
   border-radius: 10px;
   border: 1px solid;
 }
@@ -865,9 +866,13 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 .spot-inc-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.4rem;
+  font-size: 1.7rem;
   font-weight: 700;
   line-height: 1;
+}
+
+.spot-inc-num--long {
+  font-size: 1.3rem;
 }
 
 .type-viable .spot-inc-num { color: #16a34a; }
@@ -876,7 +881,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .type-mosaik .spot-inc-num { color: #4f46e5; }
 
 .spot-inc-label {
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   color: #4a4a4a;
   line-height: 1.3;
 }
@@ -988,7 +993,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 }
 
 /* ========================================
-   CAROUSEL NAVIGATION
+   NAVIGATION
    ======================================== */
 .carousel-nav {
   display: flex;
@@ -1214,14 +1219,14 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 .modal-inc-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #0a0a0a;
   line-height: 1;
 }
 
 .modal-inc-label {
-  font-size: 0.82rem;
+  font-size: 1rem;
   color: #4a4a4a;
 }
 
@@ -1304,7 +1309,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 
 /* ========================================
-   ALL SYNDROMES GRID — UNIFIED STYLE
+   ALL SYNDROMES GRID  
    ======================================== */
 #all-grid {
   display: grid;
@@ -1319,7 +1324,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   font-size: 0.82rem;
 }
 
-/* Syn Card - Same style as spot-card but smaller */
+/* Syn Card */
 .syn-card {
   position: relative;
   border: 2px solid #0a0a0a;
@@ -1401,7 +1406,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   align-items: baseline;
   gap: 4px;
   margin-bottom: 8px;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border-radius: 6px;
   border: 1px solid;
 }
@@ -1413,7 +1418,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 .syn-inc-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #0a0a0a;
 }
@@ -1443,8 +1448,20 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 6px;
   padding-top: 8px;
   border-top: 1px solid rgba(0,0,0,0.12);
+}
+
+.syn-foot .syn-inc {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 5px;
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
+  display: block;
+  line-height: 1.4;
 }
 
 .syn-age {
@@ -1478,7 +1495,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 
 /* ========================================
-   NON-DISJUNCTION EXPLAINER
+   NON-DISJUNCTION  
    ======================================== */
 #nd-explainer {
   display: grid;
@@ -1609,7 +1626,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
 
 /* ========================================
-   RISK STRIP / BAR CHART
+   BAR CHART
    ======================================== */
 #risk-strip {
   background: var(--surface);
@@ -1675,7 +1692,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
    ======================================== */
 @media (max-width: 1100px) {
   #sim-layout {
-    grid-template-columns: 240px 1fr 220px;
+    grid-template-columns: 240px 1fr 240px;
   }
 }
 

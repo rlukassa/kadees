@@ -12,7 +12,7 @@ const COLORS = {
   spindle:      0x7c3aed,
   spindleNd:    0xff4757,
   spindleNdTarget: 0xff9500,
-  cellMembrane: 0x1a2035,
+  cellMembrane: 0x1e3a6e,
   nucleus:      0x0d1530,
   particle:     0x00d4ff,
   gamet:        0x2ed573,
@@ -50,14 +50,14 @@ export class MeiosisScene {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.2;
+    this.renderer.toneMappingExposure = 1.6;
     this.renderer.setClearColor(COLORS.bg, 1);
   }
 
    // untuk membuat scene utama
   _initScene() {
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(COLORS.bg, 0.035);
+    this.scene.fog = new THREE.FogExp2(COLORS.bg, 0.008);
   }
 
   // setup kamera
@@ -68,17 +68,17 @@ export class MeiosisScene {
   }
 
   _initLights() {
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.7));
 
-    const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+    const dir = new THREE.DirectionalLight(0xffffff, 1.2);
     dir.position.set(10, 20, 15);
     this.scene.add(dir);
 
-    const bluePoint = new THREE.PointLight(COLORS.chrNormal, 2, 40);
+    const bluePoint = new THREE.PointLight(COLORS.chrNormal, 3, 60);
     bluePoint.position.set(-8, 5, 0);
     this.scene.add(bluePoint);
 
-    const purplePoint = new THREE.PointLight(COLORS.spindle, 1.5, 30);
+    const purplePoint = new THREE.PointLight(COLORS.spindle, 2, 50);
     purplePoint.position.set(8, -5, 0);
     this.scene.add(purplePoint);
   }
@@ -127,13 +127,15 @@ export class MeiosisScene {
   }
 
   // untuk membuat membran sel
-  _makeCellMembrane(radius = 7, color = COLORS.cellMembrane, opacity = 0.25) {
+  _makeCellMembrane(radius = 7, color = COLORS.cellMembrane, opacity = 0.22) {
     const geo = new THREE.SphereGeometry(radius, 32, 32);
     const mat = new THREE.MeshPhongMaterial({
       color,
+      emissive: 0x0a1a3a,
+      emissiveIntensity: 0.5,
       transparent: true,
       opacity,
-      side: THREE.FrontSide,
+      side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(geo, mat);
     this._objects.push(mesh);
@@ -209,7 +211,7 @@ export class MeiosisScene {
     const cellGroup = new THREE.Group();
     this.scene.add(cellGroup);
 
-    const membrane = this._makeCellMembrane(6.5, COLORS.cellMembrane, 0.2);
+    const membrane = this._makeCellMembrane(6.5, COLORS.cellMembrane, 0.22);
     cellGroup.add(membrane);
 
     // membuat 23 kromosom

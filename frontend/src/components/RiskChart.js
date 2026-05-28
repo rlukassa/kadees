@@ -39,6 +39,7 @@ export function createRiskCurveChart(canvasId, curveData, currentAge = 30) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { right: 10, top: 4 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -56,13 +57,13 @@ export function createRiskCurveChart(canvasId, curveData, currentAge = 30) {
       scales: {
         x: {
           grid: { color: '#e8eef6' },
-          ticks: { color: '#4a6e98', font: { size: 11, family: 'Inter, system-ui, sans-serif' } },
-          title: { display: true, text: 'Usia (tahun)', color: '#4a6e98', font: { size: 11, family: 'Inter, system-ui, sans-serif' } },
+          ticks: { color: '#4a6e98', font: { size: 9, family: 'Inter, system-ui, sans-serif' }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
+          title: { display: true, text: 'Usia (tahun)', color: '#4a6e98', font: { size: 10, family: 'Inter, system-ui, sans-serif' } },
         },
         y: {
           grid: { color: '#e8eef6' },
-          ticks: { color: '#4a6e98', font: { size: 11, family: 'Inter, system-ui, sans-serif' }, callback: v => v.toFixed(1) + '%' },
-          title: { display: true, text: 'Risiko (%)', color: '#4a6e98', font: { size: 11, family: 'Inter, system-ui, sans-serif' } },
+          ticks: { color: '#4a6e98', font: { size: 9, family: 'Inter, system-ui, sans-serif' }, callback: v => v.toFixed(1) + '%' },
+          title: { display: true, text: 'Risiko (%)', color: '#4a6e98', font: { size: 10, family: 'Inter, system-ui, sans-serif' } },
         },
       },
     },

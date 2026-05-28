@@ -91,12 +91,13 @@ const CARDS_PER_PAGE = 4;
 
 // Parse incidence for display
 function parseInc(inc) {
-  if (!inc) return { num: '', label: 'insiden' };
+  if (!inc) return { num: '', label: 'insiden', long: false };
   if (inc.includes('/')) {
     const parts = inc.split('/');
-    return { num: `1:${parts[1]?.trim() || '?'}`, label: 'insiden kelahiran' };
+    const num = `1:${parts[1]?.trim() || '?'}`;
+    return { num, label: 'insiden kelahiran', long: num.length >= 7 };
   }
-  return { num: inc, label: 'insiden' };
+  return { num: inc, label: 'insiden', long: inc.length >= 7 };
 }
 
 function renderSpotlight() {
@@ -120,7 +121,7 @@ function renderSpotlight() {
         <div class="spot-name">${s.name}</div>
         <div class="spot-aka">${s.aka} · Chr ${s.chr}</div>
         <div class="spot-inc">
-          <span class="spot-inc-num">${inc.num}</span>
+          <span class="spot-inc-num${inc.long ? ' spot-inc-num--long' : ''}">${inc.num}</span>
           <span class="spot-inc-label">${inc.label}</span>
         </div>
         <p class="spot-desc">${s.desc}</p>
@@ -274,10 +275,10 @@ function showDetailModal(syndrome) {
   const featList = syndrome.feat.split(', ').map(f => f.trim());
 
   modal.innerHTML = `
-    <div class="modal-content">
+    <div class="modal-content ${v.cls}">
       <div class="modal-header ${v.cls}">
         <span class="modal-kary">${syndrome.kar}</span>
-        <button class="modal-close" onclick="closeDetailModal()">×</button>
+        <button class="modal-close">×</button>
         <h2 class="modal-title">${syndrome.name}</h2>
         <p class="modal-subtitle">${syndrome.aka} · Kromosom ${syndrome.chr}</p>
       </div>
@@ -331,6 +332,7 @@ function showDetailModal(syndrome) {
   modal.classList.add('show');
   document.body.style.overflow = 'hidden';
 
+  modal.querySelector('.modal-close').addEventListener('click', closeDetailModal);
   modal.addEventListener('click', (e) => {
     if (e.target === modal) closeDetailModal();
   });
