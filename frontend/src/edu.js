@@ -90,17 +90,15 @@ function renderSpotlight() {
   const el = document.getElementById('spotlight-grid');
   el.innerHTML = SYNDROMES.filter(s => s.featured).map((s, i) => {
     const v = viaTag(s.via);
-    const bgLight = s.featColor || (s.ac + '12');
-    const borderLight = s.featColor ? s.featColor : (s.ac + '22');
     return `<div class="spot-card appear" style="--ac:${s.ac}; animation-delay:${i * 0.07}s">
       <div class="spot-top">
         <span class="spot-kary">${s.kar}</span>
         <span class="tag ${v.cls}">${v.lbl}</span>
       </div>
       <div class="spot-name">${s.name}</div>
-      <div class="spot-aka" style="color:${s.ac}">${s.aka} · Chr ${s.chr}</div>
+      <div class="spot-aka">${s.aka} · Chr ${s.chr}</div>
       <p class="spot-desc">${s.desc}</p>
-      <div class="spot-features" style="background:${bgLight}; border-color:${borderLight}">
+      <div class="spot-features">
         <div class="spot-ftitle">Manifestasi Klinis</div>
         <div class="spot-fbody">${s.feat}</div>
       </div>
