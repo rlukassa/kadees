@@ -192,15 +192,15 @@ export class MeiosisScene {
     this._clearScene();
     this.controls.autoRotate = false;
 
-    const hasND      = simulationData.results.aneuploid_count > 0;
-    const targetChr  = simulationData.config?.target_chromosome ?? 21;
-    const allSamples = simulationData.sample_gametes || [];
+    const hasND = simulationData.results.aneuploidCount > 0;
+    const targetChr = simulationData.config?.targetChromosome ?? 21;
+    const allSamples = simulationData.sampleGametes || [];
 
     // simpan kromosom yang mengalami non-disjunction
-    const ndSet    = new Set(); // nomor kromosom yang mengalami ND
-    const ndMIISet = new Set(); // subset yang ND di Meiosis II
+    const ndSet    = new Set();
+    const ndMIISet = new Set();
     allSamples.forEach(g => {
-      (g.affected_chromosomes || []).forEach(c => {
+      (g.affectedChromosomes || []).forEach(c => {
         ndSet.add(c.number);
         if (c.state === 'nd_mII') ndMIISet.add(c.number);
       });
@@ -222,7 +222,6 @@ export class MeiosisScene {
       const isTarget   = chrNum === targetChr;
       const isMII      = ndMIISet.has(chrNum);
 
-      // Warna: target ND = oranye, non-target MI ND = merah, MII ND = kuning-oranye, normal = biru
       let color;
       if (isNd && isTarget)  color = COLORS.chrNdTarget;
       else if (isNd && isMII) color = COLORS.chrNdMII;
@@ -262,7 +261,7 @@ export class MeiosisScene {
     const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' } });
     this._timeline = tl;
 
-     // interfase
+    // interfase
     tl.addLabel('interphase');
     tl.call(() => this._setStage('interphase'));
 
@@ -305,7 +304,7 @@ export class MeiosisScene {
       }
     });
 
-     // Meiosis II
+    // Meiosis II
     tl.addLabel('meiosis2', '+=0.3');
     tl.call(() => this._setStage('meiosis2'), null, 'meiosis2');
     tl.to(membrane.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 1.0 }, 'meiosis2');
@@ -324,8 +323,8 @@ export class MeiosisScene {
   // menampilkan gamete hasil meiosis
   _showGametes(simData) {
     this._clearScene();
-    const targetChr    = simData.config?.target_chromosome ?? 21;
-    const sampleGametes = simData.sample_gametes || [];
+    const targetChr     = simData.config?.targetChromosome ?? 21;
+    const sampleGametes = simData.sampleGametes || [];
     const aneuploidItems = sampleGametes.map(g => ({ isAneuploid: true, gamete: g }));
     const normalCount    = Math.max(1, 8 - aneuploidItems.length);
     const items = [
@@ -341,15 +340,15 @@ export class MeiosisScene {
       // menentukan warna gamete berdasarkan kondisi kromosom
       let color = COLORS.gamet;
       if (item.isAneuploid && item.gamete) {
-        const affected   = item.gamete.affected_chromosomes || [];
-        const targetHit  = affected.some(c => c.number === targetChr);
-        const hasMII     = affected.some(c => c.state === 'nd_mII');
-        if (targetHit)     color = COLORS.gametNdTarget;
-        else if (hasMII)   color = COLORS.chrNdMII;
-        else               color = COLORS.gametNd;
+        const affected  = item.gamete.affectedChromosomes || [];
+        const targetHit = affected.some(c => c.number === targetChr);
+        const hasMII    = affected.some(c => c.state === 'nd_mII');
+        if (targetHit)   color = COLORS.gametNdTarget;
+        else if (hasMII) color = COLORS.chrNdMII;
+        else             color = COLORS.gametNd;
       }
 
-      const size = item.isAneuploid ? 0.8 : 0.65; // gamete aneuploid sedikit lebih besar
+      const size = item.isAneuploid ? 0.8 : 0.65;
       const geo  = new THREE.SphereGeometry(size, 20, 20);
       const mat  = new THREE.MeshPhongMaterial({
         color,
@@ -383,7 +382,7 @@ export class MeiosisScene {
     });
   }
 
- // untuk membersihkan objek dari scene
+  // untuk membersihkan objek dari scene
   _clearScene() {
     this._objects.forEach((obj) => {
       this.scene.remove(obj);
