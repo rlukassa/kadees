@@ -25,7 +25,6 @@ class Chromosome:
     lengthCm: float = 100.0
 
     def __post_init__(self):
-        # Assign label otomatis jika kosong
         if not self.label:
             self.label = f"chr{self.number}"
 

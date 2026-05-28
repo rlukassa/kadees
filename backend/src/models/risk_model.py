@@ -4,7 +4,7 @@ import math
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TABEL RISIKO EMPIRIS — Bersumber dari Literatur Medis Terpercaya
+# TABEL RISIKO EMPIRIS
 #
 # // diambil dari source:
 # //   Hook EB (1981). Tabel 1: "All chromosome abnormalities" per usia maternal.
@@ -24,6 +24,7 @@ import math
 # Format: { usia_ibu (int) : probabilitas_aneuploidi_total (float 0.0–1.0) }
 # Nilai mencakup seluruh kelainan kromosom (trisomi autosom + seks).
 # ═══════════════════════════════════════════════════════════════════════════════
+
 MATERNAL_AGE_RISK_TABLE: Dict[int, float] = {
     # Usia muda (15-24): risiko rendah, stabil
     15: 0.0022, 16: 0.0021, 17: 0.0020, 18: 0.0019, 19: 0.0018,

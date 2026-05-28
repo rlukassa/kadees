@@ -1,7 +1,6 @@
 import { getRiskCurve } from './utils/api.js';
 import Chart from 'chart.js/auto';
 
-// cache risk curve dari backend, fallback lokal kalo fetch gagal
 // tabel 1: Total kelainan kromosom per 1.000 kelahiran hidup, dikonversi ke persen
 const RISK_FALLBACK = {
   15: .22, 16: .21, 17: .20, 18: .19, 19: .18,
@@ -13,7 +12,6 @@ const RISK_FALLBACK = {
   45: 5.37, 46: 6.89, 47: 8.91, 48: 11.50, 49: 14.93,
 };
 
-// riskCurveCache diisi dari BE saat init, fallback ke lokal jika gagal
 let riskCurveCache = null;
 
 function getRisk(age) {
@@ -25,7 +23,7 @@ function getRisk(age) {
   return RISK_FALLBACK[a] || 0.20;
 }
 
-// pake data Hook 1981 untuk bar chart edukasi
+// data Hook 1981 untuk bar chart edukasi
 function getHook1981(age) {
   const a = Math.max(15, Math.min(49, Math.round(age)));
   return RISK_FALLBACK[a] || 0.20;
@@ -276,12 +274,11 @@ function renderBars() {
 }
 
 async function initEdu() {
-  // ambil data risk curve dari backend dulu
   try {
     const res = await getRiskCurve(15, 49);
     riskCurveCache = res.curve;
   } catch {
-    // jika backend offline, fallback ke lokal kalo error
+
   }
 
   renderSpotlight();

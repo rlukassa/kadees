@@ -17,13 +17,11 @@ class AneuploidyType(Enum):
     DISOMY    = "disomy"     # Dua kromosom homolog ada di satu gamet (= Trisomi di zigot)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Peta sindrom klinis: { nomor_kromosom: { count_di_gamet: nama_sindrom } }
-# Interpretasi: jumlah salinan kromosom abnormal dalam gamet
-# dapat menghasilkan aneuploidi tertentu setelah fertilisasi.
+# Interpretasi: jumlah salinan kromosom abnormal dalam gamet dapat menghasilkan aneuploidi tertentu setelah fertilisasi.
 #
 # Sumber: OMIM (omim.org), Hassold & Hunt (2001) Nature Reviews Genetics
-# ─────────────────────────────────────────────────────────────────────────────
+
 SYNDROME_MAP = {
     21: {
         0: "Monosomi 21 (umumnya tidak viabel)",
@@ -96,14 +94,13 @@ class Gamete:
         if not self.isAneuploid():
             return None
 
-        # Hitung distribusi kromosom dalam gamet
         chrCounts: dict[int, int] = {}
         for c in self.chromosomes:
             chrCounts[c.number] = chrCounts.get(c.number, 0) + 1
 
         for chrNum, count in chrCounts.items():
             if count == 1:
-                continue  # Normal untuk kromosom ini
+                continue
 
             # Cari di syndrome map
             if chrNum in SYNDROME_MAP:

@@ -105,15 +105,12 @@ class MeiosisMonteCarloSimulator:
             roll = self._rng.random()
 
             if roll < pNd:
-                # Non-disjunction terjadi → tentukan di Meiosis I atau II
                 if self._rng.random() < MEIOSIS_I_FRACTION:
-                    # Non-disjunction Meiosis I: KEDUA kromosom masuk ke gamet
                     pair.paternal.markNondisjunction(1)
                     pair.maternal.markNondisjunction(1)
                     gameteChromosomes.extend([pair.paternal, pair.maternal])
                     ndMeiosisI = True
                 else:
-                    # Non-disjunction Meiosis II: satu kromosom duplikat, satunya hilang
                     chosen = self._rng.choice([pair.paternal, pair.maternal])
                     duplicate = Chromosome(
                         number=chosen.number, chrType=chosen.chrType,
@@ -124,7 +121,6 @@ class MeiosisMonteCarloSimulator:
                     gameteChromosomes.extend([chosen, duplicate])
                     ndMeiosisII = True
             else:
-                # Normal: pilih satu kromosom secara acak (Hukum Segregasi Mendel)
                 chosen = self._rng.choice([pair.paternal, pair.maternal])
                 gameteChromosomes.append(chosen)
 
@@ -145,10 +141,8 @@ class MeiosisMonteCarloSimulator:
         sampleAneuploid: List[Gamete] = []
 
         for runIndex in range(self.config.nSimulations):
-            # Buat sel diploid baru tiap iterasi
             pairs = self._createDiploidCell()
 
-            # Simulasikan meiosis
             gamete, ndMeiosisI, ndMeiosisII = self._simulateMeiosis(pairs)
             gamete.simulationRun = runIndex
 
@@ -161,17 +155,14 @@ class MeiosisMonteCarloSimulator:
                 if ndMeiosisII:
                     result.ndMeiosisIICount += 1
 
-                # Catat sindrom
                 syndrome = gamete.predictSyndrome() or "Tidak terklasifikasi"
                 syndromeCounts[syndrome] = syndromeCounts.get(syndrome, 0) + 1
 
-                # Simpan sampel (maks 5 untuk visualisasi Three.js)
                 if len(sampleAneuploid) < 5:
                     sampleAneuploid.append(gamete)
             else:
                 result.normalCount += 1
 
-        # Hitung risiko empiris dari simulasi
         result.observedRisk = result.aneuploidCount / result.totalRuns if result.totalRuns > 0 else 0
         result.syndromeCounts = syndromeCounts
         result.sampleGametes = sampleAneuploid
