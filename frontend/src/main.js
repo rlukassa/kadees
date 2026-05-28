@@ -57,7 +57,7 @@ function showChartCanvas(canvasId, placeholderId) {
 async function initApp() {
   drawRiskGauge('risk-gauge', 0, 60);
   try {
-    const curveRes = await getRiskCurve(15, 50);
+    const curveRes = await getRiskCurve(15, 49);
     riskCurveData = curveRes.curve;
     showChartCanvas('risk-chart', 'risk-chart-placeholder');
     createRiskCurveChart('risk-chart', riskCurveData, 30);

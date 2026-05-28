@@ -15,8 +15,8 @@ class ConfidenceInterval:
             "lower": round(self.lower, 6),
             "upper": round(self.upper, 6),
             "center": round(self.center, 6),
-            "levelPercent": round(self.level * 100, 1),
-            "marginOfError": round((self.upper - self.lower) / 2, 6),
+            "level_percent": round(self.level * 100, 1),
+            "margin_of_error": round((self.upper - self.lower) / 2, 6),
         }
 
 

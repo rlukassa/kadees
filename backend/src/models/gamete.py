@@ -132,13 +132,13 @@ class Gamete:
 
     def toDict(self) -> dict:
         return {
-            "gameteId":           self.gameteId,
+            "gamete_id":           self.gameteId,
             "sex":                self.sex.value,
-            "chromosomeCount":    self.chromosomeCount,
-            "isAneuploid":        self.isAneuploid(),
-            "predictedSyndrome":  self.predictSyndrome(),
-            "sourceAge":          self.sourceAge,
-            "simulationRun":      self.simulationRun,
+            "chromosome_count":    self.chromosomeCount,
+            "is_aneuploid":        self.isAneuploid(),
+            "predicted_syndrome":  self.predictSyndrome(),
+            "source_age":          self.sourceAge,
+            "simulation_run":      self.simulationRun,
             "chromosomes":        [c.toDict() for c in self.chromosomes],
-            "affectedChromosomes": [c.toDict() for c in self.getAffectedChromosomes()],
+            "affected_chromosomes": [c.toDict() for c in self.getAffectedChromosomes()],
         }

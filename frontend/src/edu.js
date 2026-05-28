@@ -17,7 +17,7 @@ const RISK_FALLBACK = {
 let riskCurveCache = null;
 
 function getRisk(age) {
-  const a = Math.max(15, Math.min(50, Math.round(age)));
+  const a = Math.max(15, Math.min(49, Math.round(age)));
   if (riskCurveCache) {
     const point = riskCurveCache.find(p => p.maternal_age === a);
     if (point) return point.total_risk_percent;
@@ -27,7 +27,7 @@ function getRisk(age) {
 
 // pake data Hook 1981 untuk bar chart edukasi
 function getHook1981(age) {
-  const a = Math.max(15, Math.min(50, Math.round(age)));
+  const a = Math.max(15, Math.min(49, Math.round(age)));
   return RISK_FALLBACK[a] || 0.20;
 }
 
@@ -280,7 +280,7 @@ function renderBars() {
 async function initEdu() {
   // ambil data risk curve dari backend dulu
   try {
-    const res = await getRiskCurve(15, 50);
+    const res = await getRiskCurve(15, 49);
     riskCurveCache = res.curve;
   } catch {
     // jika backend offline, fallback ke lokal kalo error

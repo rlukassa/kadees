@@ -89,7 +89,7 @@ async def compareAges(
 @app.get("/api/risk/{maternalAge}", tags=["Risk Model"])
 async def getRiskProfile(maternalAge: int):
     if not (15 <= maternalAge <= 49):
-        raise HTTPException(status_code=400, detail="Usia harus antara 15–50 tahun.")
+        raise HTTPException(status_code=400, detail="Usia harus antara 15–49 tahun.")
     profile = riskModel.getRiskProfile(maternalAge)
     return profile.toDict()
 

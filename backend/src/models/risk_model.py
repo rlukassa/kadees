@@ -66,13 +66,13 @@ class RiskProfile:
 
     def toDict(self) -> dict:
          return {
-            "maternalAge":      self.maternalAge,
-            "totalRisk":        round(self.totalRisk, 6),
-            "meiosisIRisk":     round(self.meiosisIRisk, 6),
-            "meiosisIIRisk":    round(self.meiosisIIRisk, 6),
-            "riskCategory":     self.riskCategory,
-            "riskRatioToBase":  round(self.riskRatioToBase, 2),
-            "totalRiskPercent": round(self.totalRisk * 100, 4),
+            "maternal_age":      self.maternalAge,
+            "total_risk":        round(self.totalRisk, 6),
+            "meiosis_I_risk":     round(self.meiosisIRisk, 6),
+            "meiosis_II_risk":    round(self.meiosisIIRisk, 6),
+            "risk_category":     self.riskCategory,
+            "risk_ratio_to_base":  round(self.riskRatioToBase, 2),
+            "total_risk_percent": round(self.totalRisk * 100, 4),
         }
 
 
@@ -81,7 +81,7 @@ class MaternalAgeRiskModel:
 
     def __init__(self, customTable: Dict[int, float] = None):
         self._riskTable = customTable if customTable else MATERNAL_AGE_RISK_TABLE.copy()
-        self._base_risk = self._risk_table.get(self.BASE_AGE, 0.0021)
+        self._base_risk = self._riskTable.get(self.BASE_AGE, 0.0021)
 
     def interpolateRisk(self, age: float) -> float:
         ageFloor = int(math.floor(age))
@@ -117,7 +117,7 @@ class MaternalAgeRiskModel:
         total        = self.interpolateRisk(age)
         meiosisIRisk = total * MEIOSIS_I_FRACTION
         meiosisIIRisk= total * MEIOSIS_II_FRACTION
-        ratio        = total / self._baseRisk if self._baseRisk > 0 else 1.0
+        ratio        = total / self._base_risk if self._base_risk > 0 else 1.0
 
         return RiskProfile(
             maternalAge=age,
@@ -141,9 +141,9 @@ class MaternalAgeRiskModel:
                     if profileA.totalRisk > 0 else float("inf"))
 
         return {
-            "ageA":           profileA.toDict(),
-            "ageB":           profileB.toDict(),
-            "riskRatioAToB":  round(ratio, 2),
+            "age_a":           profileA.toDict(),
+            "age_b":           profileB.toDict(),
+            "risk_ratio_a_to_b":  round(ratio, 2),
             "interpretation": (
                 f"Risiko pada usia {ageB} adalah {ratio:.1f}x lebih tinggi dari usia {ageA}"
             ),
