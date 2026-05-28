@@ -1,7 +1,6 @@
 import { getRiskCurve } from './utils/api.js';
 import Chart from 'chart.js/auto';
 
-// tabel 1: Total kelainan kromosom per 1.000 kelahiran hidup, dikonversi ke persen
 const RISK_FALLBACK = {
   15: .22, 16: .21, 17: .20, 18: .19, 19: .18,
   20: .19, 21: .19, 22: .20, 23: .20, 24: .21,
@@ -35,21 +34,21 @@ const SYNDROMES = [
   { name: 'Sindrom Patau (Trisomi 13)', aka: 'Trisomi 13', chr: '13', type: 'autosom', kar: '47,XX/XY +13', inc: '1/10.000', via: 'jarang', nd: 'Meiosis I', age: 'Kuat', feat: 'Holoprosensefali, celah bibir/langit-langit, polidaktili, siklopia, defek jantung berat', desc: 'Kelainan berat otak, wajah, dan jantung. Sebagian besar bayi meninggal pada minggu pertama kehidupan, meskipun sebagian kecil dapat bertahan lebih lama dengan perawatan intensif.', ac: '#ca8a04', featColor: '#FFFEC8', featured: true },
   { name: 'Sindrom Turner', aka: 'Monosomi X', chr: 'X', type: 'seks', kar: '45,X', inc: '1/2.500 (perempuan)', via: 'viable', nd: 'Meiosis I/II', age: 'Tidak ada', feat: 'Perawakan pendek, ovarium streaks, mayoritas infertilitas, webbed neck, koarktasio aorta, amenore primer', desc: 'Satu-satunya monosomi yang viable pada manusia. Sekitar 95-99% embrio 45,X gugur spontan. Hanya terjadi pada wanita.', ac: '#15803d', featColor: '#DFFFBF', featured: true },
   { name: 'Sindrom Klinefelter', aka: '47,XXY', chr: 'X', type: 'seks', kar: '47,XXY', inc: '1/500 (laki-laki)', via: 'viable', nd: 'Meiosis I', age: 'Sedang', feat: 'Hipogonadisme, ginekomastia, gangguan fertilitas yang umum terjadi pada sebagian besar pasien, testis kecil, tubuh tinggi, testosteron rendah, risiko osteoporosis', desc: 'Sindrom kromosom seks paling umum pada pria. Sekitar 75% tidak pernah terdiagnosis. Sering ditemukan saat konsultasi kesuburan.', ac: '#15803d', featColor: '#DFFFBF', featured: true },
-  { name: 'Triple X', aka: '47,XXX', chr: 'X', type: 'seks', kar: '47,XXX', inc: '1/1.000 (perempuan)', via: 'viable', nd: 'Meiosis I/II', age: 'Lemah', feat: 'Tinggi badan di atas rata-rata, kesulitan belajar ringan, perkembangan bahasa terlambat, menstruasi biasanya normal', desc: 'Banyak wanita 47,XXX tidak pernah terdiagnosis dan memiliki gejala sangat ringan atau tanpa gejala signifikan.', ac: '#166534', featured: false },
-  { name: 'Sindrom XYY', aka: '47,XYY', chr: 'Y', type: 'seks', kar: '47,XYY', inc: '1/1.000 (laki-laki)', via: 'viable', nd: 'Meiosis II', age: 'Tidak ada', feat: 'Tubuh sangat tinggi, peningkatan risiko masalah perilaku/ADHD pada sebagian individu, fertil, rentan akne', desc: 'Sindrom kromosom seks dengan hubungan maternal age yang minimal dibanding trisomi autosom. Umumnya fertil dan hidup normal.', ac: '#059669', featured: false },
-  { name: 'Sindrom XXXY', aka: '48,XXXY', chr: 'X', type: 'seks', kar: '48,XXXY', inc: 'Sangat jarang', via: 'viable', nd: 'Meiosis I+II', age: 'Sedang', feat: 'Disabilitas intelektual sedang-berat, hipogonadisme, ginekomastia, wajah khas', desc: 'Varian Klinefelter lebih berat. Tiga kromosom X menyebabkan gangguan perkembangan lebih signifikan.', ac: '#15803d', featured: false },
-  { name: 'Sindrom XXYY', aka: '48,XXYY', chr: 'X/Y', type: 'seks', kar: '48,XXYY', inc: '1/17.000 (laki-laki)', via: 'viable', nd: 'Meiosis I+II', age: 'Sedang', feat: 'Masalah perilaku dan temperamental, hipogonadisme, tubuh sangat tinggi, tremor halus', desc: 'Kombinasi X dan Y ekstra. Sering didiagnosis saat dewasa muda.', ac: '#15803d', featured: false },
-  { name: 'Sindrom XXXXY', aka: '49,XXXXY', chr: 'X', type: 'seks', kar: '49,XXXXY', inc: 'Sangat jarang', via: 'viable', nd: 'Multiple non-disjunction', age: 'Lemah', feat: 'Disabilitas intelektual berat, sinostosis radioulnar, hipogonadisme, dismorfisme wajah', desc: 'Bentuk paling berat dari kelompok Klinefelter.', ac: '#166534', featured: false },
-  { name: 'Penta X', aka: '49,XXXXX', chr: 'X', type: 'seks', kar: '49,XXXXX', inc: '< 1/100.000 (perempuan)', via: 'jarang', nd: 'Multiple non-disjunction', age: 'Lemah', feat: 'Disabilitas intelektual berat, defek kraniofasial, kelainan jantung dan ginjal', desc: 'Lima kromosom X — kasus sangat langka. Prognosis buruk.', ac: '#b91c1c', featured: false },
-  { name: 'Trisomi 22', aka: 'Trisomi 22', chr: '22', type: 'autosom', kar: '47,XX/XY +22', inc: 'sangat jarang', via: 'jarang', nd: 'Bervariasi', age: 'Sedang', feat: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual (mosaik)', desc: 'umumnya tidak kompatibel dengan kehidupan. Kasus mosaik bisa bertahan dengan gejala bervariasi.', ac: '#166534', featured: false },
-  { name: 'Sindrom Down Mosaik', aka: 'Mosaik Trisomi 21', chr: '21', type: 'mosaik', kar: '46/47,+21 [mosaik]', inc: '~1-2% kasus Trisomi 21', via: 'viable', nd: 'Meiosis I+mitosis', age: 'Sedang', feat: 'Fenotip lebih ringan dari Trisomi 21 penuh; variabilitas gejala besar', desc: 'Sebagian sel normal, sebagian trisomi. Dampak klinis tergantung proporsi sel aneuploid.', ac: '#16a34a', featured: false },
-  { name: 'Sindrom Turner Mosaik', aka: 'Mosaik 45,X', chr: 'X', type: 'mosaik', kar: '45,X/46,XX [mosaik]', inc: 'Lebih jarang dibanding bentuk klasik', via: 'viable', nd: 'Meiosis/mitosis', age: 'Lemah', feat: 'Gejala lebih ringan dari Turner klasik; sebagian kecil masih bisa hamil alami', desc: 'Prognosis reproduksi lebih baik. Bentuk paling umum dari Turner.', ac: '#15803d', featured: false },
-  { name: 'Sindrom Klinefelter Mosaik', aka: 'Mosaik 47,XXY', chr: 'X', type: 'mosaik', kar: '46,XY/47,XXY [mosaik]', inc: 'Lebih jarang dibanding bentuk klasik', via: 'viable', nd: 'Meiosis/mitosis', age: 'Sedang', feat: 'Sebagian pria bisa fertil; gejala lebih ringan dari Klinefelter klasik', desc: 'Mosaik Klinefelter dengan prognosis reproduksi lebih baik.', ac: '#15803d', featured: false },
-  { name: 'Trisomi 8 Mosaik', aka: 'Warkany Syndrome 2', chr: '8', type: 'mosaik', kar: '46/47,+8 [mosaik]', inc: 'sangat jarang', via: 'viable', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Kelainan muskuloskeletal, wajah khas, disabilitas intelektual ringan-sedang, stenosis ureter', desc: 'Trisomi 8 penuh tidak viable. Bentuk mosaik memungkinkan bertahan dengan gejala variabel.', ac: '#c2410c', featured: false },
-  { name: 'Trisomi 9 Mosaik', aka: 'Trisomi 9 Parsial', chr: '9', type: 'mosaik', kar: '46/47,+9 [mosaik]', inc: 'Kasus sangat jarang', via: 'jarang', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Kelainan otak, defek jantung, dismorfisme wajah, kelainan tulang', desc: 'Sangat jarang. Prognosis tergantung persentase sel aneuploid.', ac: '#b91c1c', featured: false },
-  { name: 'Trisomi 20 Mosaik', aka: 'Mosaik Trisomi 20', chr: '20', type: 'mosaik', kar: '46/47,+20 [mosaik]', inc: 'Jarang ditemukan prenatal', via: 'viable', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Sering ditemukan prenatal; fenotip sering normal atau sangat ringan', desc: 'Sering ditemukan saat amniosentesis tanpa tanda klinis nyata.', ac: '#15803d', featured: false },
-  { name: 'Trisomi 22 Mosaik', aka: 'Mosaik Trisomi 22', chr: '22', type: 'mosaik', kar: '46/47,+22 [mosaik]', inc: 'Sangat jarang', via: 'jarang', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual', desc: 'Prognosis bervariasi tergantung proporsi sel aneuploid.', ac: '#047857', featured: false },
-  ...[1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 19].map(i => ({
+  { name: 'Triple X', aka: '47,XXX', chr: 'X', type: 'seks', kar: '47,XXX', inc: '1/1.000 (perempuan)', via: 'viable', nd: 'Meiosis I/II', age: 'Lemah', feat: 'Tinggi badan di atas rata-rata, kesulitan belajar ringan, perkembangan bahasa terlambat, menstruasi biasanya normal', desc: 'Tinggi badan di atas rata-rata, kesulitan belajar ringan, perkembangan bahasa terlambat, menstruasi biasanya normal.', ac: '#166534', featured: false },
+  { name: 'Sindrom XYY', aka: '47,XYY', chr: 'Y', type: 'seks', kar: '47,XYY', inc: '1/1.000 (laki-laki)', via: 'viable', nd: 'Meiosis II', age: 'Tidak ada', feat: 'Tubuh sangat tinggi, peningkatan risiko masalah perilaku/ADHD pada sebagian individu, fertil, rentan akne', desc: 'Tubuh sangat tinggi, peningkatan risiko masalah perilaku/ADHD pada sebagian individu, fertil, rentan akne.', ac: '#059669', featured: false },
+  { name: 'Sindrom XXXY', aka: '48,XXXY', chr: 'X', type: 'seks', kar: '48,XXXY', inc: 'Sangat jarang', via: 'viable', nd: 'Meiosis I+II', age: 'Sedang', feat: 'Disabilitas intelektual sedang-berat, hipogonadisme, ginekomastia, wajah khas', desc: 'Disabilitas intelektual sedang-berat, hipogonadisme, ginekomastia, wajah khas.', ac: '#15803d', featured: false },
+  { name: 'Sindrom XXYY', aka: '48,XXYY', chr: 'X/Y', type: 'seks', kar: '48,XXYY', inc: '1/17.000 (laki-laki)', via: 'viable', nd: 'Meiosis I+II', age: 'Sedang', feat: 'Masalah perilaku dan temperamental, hipogonadisme, tubuh sangat tinggi, tremor halus', desc: 'Masalah perilaku dan temperamental, hipogonadisme, tubuh sangat tinggi, tremor halus.', ac: '#15803d', featured: false },
+  { name: 'Sindrom XXXXY', aka: '49,XXXXY', chr: 'X', type: 'seks', kar: '49,XXXXY', inc: 'Sangat jarang', via: 'viable', nd: 'Multiple non-disjunction', age: 'Lemah', feat: 'Disabilitas intelektual berat, sinostosis radioulnar, hipogonadisme, dismorfisme wajah', desc: 'Disabilitas intelektual berat, sinostosis radioulnar, hipogonadisme, dismorfisme wajah.', ac: '#166534', featured: false },
+  { name: 'Penta X', aka: '49,XXXXX', chr: 'X', type: 'seks', kar: '49,XXXXX', inc: '< 1/100.000 (perempuan)', via: 'jarang', nd: 'Multiple non-disjunction', age: 'Lemah', feat: 'Disabilitas intelektual berat, defek kraniofasial, kelainan jantung dan ginjal', desc: 'Disabilitas intelektual berat, defek kraniofasial, kelainan jantung dan ginjal.', ac: '#b91c1c', featured: false },
+  { name: 'Trisomi 22', aka: 'Trisomi 22', chr: '22', type: 'autosom', kar: '47,XX/XY +22', inc: 'sangat jarang', via: 'jarang', nd: 'Bervariasi', age: 'Sedang', feat: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual (mosaik)', desc: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual (mosaik).', ac: '#166534', featured: false },
+  { name: 'Sindrom Down Mosaik', aka: 'Mosaik Trisomi 21', chr: '21', type: 'mosaik', kar: '46/47,+21 [mosaik]', inc: '~1-2% kasus Trisomi 21', via: 'viable', nd: 'Meiosis I+mitosis', age: 'Sedang', feat: 'Fenotip lebih ringan dari Trisomi 21 penuh; variabilitas gejala besar', desc: 'Fenotip lebih ringan dari Trisomi 21 penuh; variabilitas gejala besar.', ac: '#16a34a', featured: false },
+  { name: 'Sindrom Turner Mosaik', aka: 'Mosaik 45,X', chr: 'X', type: 'mosaik', kar: '45,X/46,XX [mosaik]', inc: 'Lebih jarang dibanding bentuk klasik', via: 'viable', nd: 'Meiosis/mitosis', age: 'Lemah', feat: 'Gejala lebih ringan dari Turner klasik; sebagian kecil masih bisa hamil alami', desc: 'Gejala lebih ringan dari Turner klasik; sebagian kecil masih bisa hamil alami.', ac: '#15803d', featured: false },
+  { name: 'Sindrom Klinefelter Mosaik', aka: 'Mosaik 47,XXY', chr: 'X', type: 'mosaik', kar: '46,XY/47,XXY [mosaik]', inc: 'Lebih jarang dibanding bentuk klasik', via: 'viable', nd: 'Meiosis/mitosis', age: 'Sedang', feat: 'Sebagian pria bisa fertil; gejala lebih ringan dari Klinefelter klasik', desc: 'Sebagian pria bisa fertil; gejala lebih ringan dari Klinefelter klasik.', ac: '#15803d', featured: false },
+  { name: 'Trisomi 8 Mosaik', aka: 'Warkany Syndrome 2', chr: '8', type: 'mosaik', kar: '46/47,+8 [mosaik]', inc: 'sangat jarang', via: 'viable', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Kelainan muskuloskeletal, wajah khas, disabilitas intelektual ringan-sedang, stenosis ureter', desc: 'Kelainan muskuloskeletal, wajah khas, disabilitas intelektual ringan-sedang, stenosis ureter.', ac: '#c2410c', featured: false },
+  { name: 'Trisomi 9 Mosaik', aka: 'Trisomi 9 Parsial', chr: '9', type: 'mosaik', kar: '46/47,+9 [mosaik]', inc: 'Kasus sangat jarang', via: 'jarang', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Kelainan otak, defek jantung, dismorfisme wajah, kelainan tulang', desc: 'Kelainan otak, defek jantung, dismorfisme wajah, kelainan tulang.', ac: '#b91c1c', featured: false },
+  { name: 'Trisomi 20 Mosaik', aka: 'Mosaik Trisomi 20', chr: '20', type: 'mosaik', kar: '46/47,+20 [mosaik]', inc: 'Jarang ditemukan prenatal', via: 'viable', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Sering ditemukan prenatal; fenotip sering normal atau sangat ringan', desc: 'Sering ditemukan prenatal; fenotip sering normal atau sangat ringan.', ac: '#15803d', featured: false },
+  { name: 'Trisomi 22 Mosaik', aka: 'Mosaik Trisomi 22', chr: '22', type: 'mosaik', kar: '46/47,+22 [mosaik]', inc: 'Sangat jarang', via: 'jarang', nd: 'Mitosis post-zigot', age: 'Lemah', feat: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual', desc: 'Kelainan kraniofasial, defek jantung, disabilitas intelektual.', ac: '#047857', featured: false },
+  ...[1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 17, 19].map(i => ({
     name: `Trisomi ${i}`,
     aka: `Trisomi ${i}`,
     chr: `${i}`,
@@ -58,22 +57,23 @@ const SYNDROMES = [
     inc: 'Umumnya tidak ditemukan pada kelahiran hidup',
     via: 'tidak viable',
     nd: 'Bervariasi',
-    age: i === 16 ? 'Kuat' : 'Lemah',
-    feat: `Aborsi spontan dini; kelainan berat organ vital.${i === 16 ? ' Penyebab tersering miscarriage trisomi.' : ''}`,
+    age: 'Lemah',
+    feat: 'Aborsi spontan dini; kelainan berat organ vital.',
     desc: `Trisomi ${i} penuh umumnya tidak kompatibel dengan kehidupan. Sebagian besar berakhir keguguran pada trimester pertama.`,
     ac: '#94a3b8',
     featured: false,
   })),
+  { name: 'Trisomi 16', aka: 'Trisomi 16', chr: '16', type: 'autosom', kar: '47,XX/XY +16', inc: 'Umumnya tidak ditemukan pada kelahiran hidup', via: 'tidak viable', nd: 'Bervariasi', age: 'Kuat', feat: 'Aborsi spontan dini; kelainan berat organ vital. Penyebab tersering miscarriage trisomi.', desc: 'Trisomi 16 penuh umumnya tidak kompatibel dengan kehidupan. Penyebab tersering miscarriage trisomi. Sebagian besar berakhir keguguran pada trimester pertama.', ac: '#94a3b8', featured: false },
 ];
 
 function viaTag(v) {
   const k = (v || '').toLowerCase();
-  if (k.includes('jarang')) return { cls: 'tag-jarang', lbl: 'Jarang Viable' };
-  if (k.includes('tidak')) return { cls: 'tag-tidak', lbl: 'Tidak Viable' };
-  if (k.includes('viable') || k.includes('viabel')) return { cls: 'tag-viable', lbl: 'Viable' };
-  if (k.includes('mosaik')) return { cls: 'tag-mosaik', lbl: 'Mosaik' };
-  if (k.includes('kematian')) return { cls: 'tag-jarang', lbl: 'Neonatal' };
-  return { cls: 'tag-tidak', lbl: 'Tidak Viable' };
+  if (k.includes('jarang')) return { cls: 'type-jarang', lbl: 'Jarang' };
+  if (k.includes('tidak')) return { cls: 'type-tidak', lbl: 'Tidak Viable' };
+  if (k.includes('viable') || k.includes('viabel')) return { cls: 'type-viable', lbl: 'Viable' };
+  if (k.includes('mosaik')) return { cls: 'type-mosaik', lbl: 'Mosaik' };
+  if (k.includes('kematian')) return { cls: 'type-jarang', lbl: 'Neonatal' };
+  return { cls: 'type-tidak', lbl: 'Tidak Viable' };
 }
 
 function ageLabel(a) {
@@ -84,29 +84,272 @@ function ageClass(a) {
   return { Kuat: 'age-kuat', Sedang: 'age-sedang', Lemah: 'age-lemah', 'Tidak ada': 'age-tidak' }[a] || 'age-tidak';
 }
 
+// Carousel state
+let currentSlide = 0;
+let autoSlideInterval = null;
+const CARDS_PER_PAGE = 4;
+
+// Parse incidence for display
+function parseInc(inc) {
+  if (!inc) return { num: '', label: 'insiden' };
+  if (inc.includes('/')) {
+    const parts = inc.split('/');
+    return { num: `1:${parts[1]?.trim() || '?'}`, label: 'insiden kelahiran' };
+  }
+  return { num: inc, label: 'insiden' };
+}
+
 function renderSpotlight() {
+  const featured = SYNDROMES.filter(s => s.featured);
+  const totalPages = Math.ceil(featured.length / CARDS_PER_PAGE);
+
+  // Create carousel structure
   const el = document.getElementById('spotlight-grid');
-  el.innerHTML = SYNDROMES.filter(s => s.featured).map((s, i) => {
+  const wrapper = document.querySelector('.spot-carousel-wrap') || createCarouselStructure();
+
+  const track = document.getElementById('spot-carousel-track');
+  track.innerHTML = featured.map((s, i) => {
     const v = viaTag(s.via);
-    return `<div class="spot-card appear" style="--ac:${s.ac}; animation-delay:${i * 0.07}s">
-      <div class="spot-top">
-        <span class="spot-kary">${s.kar}</span>
-        <span class="tag ${v.cls}">${v.lbl}</span>
-      </div>
-      <div class="spot-name">${s.name}</div>
-      <div class="spot-aka">${s.aka} · Chr ${s.chr}</div>
-      <p class="spot-desc">${s.desc}</p>
-      <div class="spot-features">
-        <div class="spot-ftitle">Manifestasi Klinis</div>
-        <div class="spot-fbody">${s.feat}</div>
-      </div>
-      <div class="spot-footer">
-        <span class="syn-inc">${s.inc}</span>
-        <span class="spot-footer-val ${ageClass(s.age)}">${ageLabel(s.age)}</span>
+    const inc = parseInc(s.inc);
+    return `<div class="spot-card ${v.cls} appear" data-index="${i}" style="animation-delay:${i * 0.07}s">
+      <div class="spot-card-inner">
+        <div class="spot-top">
+          <span class="spot-kary">${s.kar}</span>
+          <span class="spot-badge">${v.lbl}</span>
+        </div>
+        <div class="spot-name">${s.name}</div>
+        <div class="spot-aka">${s.aka} · Chr ${s.chr}</div>
+        <div class="spot-inc">
+          <span class="spot-inc-num">${inc.num}</span>
+          <span class="spot-inc-label">${inc.label}</span>
+        </div>
+        <p class="spot-desc">${s.desc}</p>
+        <div class="spot-features">
+          <div class="spot-ftitle">Manifestasi Klinis</div>
+          <div class="spot-fbody">${s.feat}</div>
+        </div>
+        <div class="spot-footer">
+          <span class="spot-footer-lbl">Pengaruh Usia Maternal</span>
+          <span class="spot-footer-val ${ageClass(s.age)}">${ageLabel(s.age)}</span>
+        </div>
       </div>
     </div>`;
   }).join('');
+
+  // Update dots
+  updateCarouselDots();
+
+  // Add click handlers
+  document.querySelectorAll('.spot-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const idx = parseInt(card.dataset.index);
+      showDetailModal(featured[idx]);
+    });
+  });
+
+  // Start auto-slide
+  startAutoSlide();
 }
+
+function createCarouselStructure() {
+  const section = document.getElementById('spotlight-section');
+  const divider = section.querySelector('.divider');
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'spot-carousel-wrap';
+  wrapper.innerHTML = `
+    <div class="spot-carousel-track" id="spot-carousel-track"></div>
+  `;
+
+  const nav = document.createElement('div');
+  nav.className = 'carousel-nav';
+  nav.innerHTML = `
+    <button class="carousel-btn" id="carousel-prev">←</button>
+    <div class="carousel-dots" id="carousel-dots"></div>
+    <button class="carousel-btn" id="carousel-next">→</button>
+  `;
+
+  const progress = document.createElement('div');
+  progress.className = 'carousel-progress';
+  progress.innerHTML = `<div class="carousel-progress-bar" id="carousel-progress-bar"></div>`;
+
+  section.insertBefore(wrapper, divider.nextSibling);
+  section.insertBefore(nav, divider.nextSibling);
+  section.insertBefore(progress, divider.nextSibling);
+
+  // Add event listeners
+  document.getElementById('carousel-prev').addEventListener('click', () => {
+    prevSlide();
+    resetAutoSlide();
+  });
+  document.getElementById('carousel-next').addEventListener('click', () => {
+    nextSlide();
+    resetAutoSlide();
+  });
+
+  return wrapper;
+}
+
+function updateCarouselDots() {
+  const featured = SYNDROMES.filter(s => s.featured);
+  const totalPages = Math.ceil(featured.length / CARDS_PER_PAGE);
+  const dotsContainer = document.getElementById('carousel-dots');
+
+  dotsContainer.innerHTML = Array.from({ length: totalPages }, (_, i) =>
+    `<div class="carousel-dot ${i === currentSlide ? 'active' : ''}" data-page="${i}"></div>`
+  ).join('');
+
+  dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      currentSlide = parseInt(dot.dataset.page);
+      updateCarousel();
+      resetAutoSlide();
+    });
+  });
+
+  // Update button states
+  document.getElementById('carousel-prev').disabled = currentSlide === 0;
+  document.getElementById('carousel-next').disabled = currentSlide >= totalPages - 1;
+}
+
+function updateCarousel() {
+  const track = document.getElementById('spot-carousel-track');
+  const cardWidth = track.querySelector('.spot-card')?.offsetWidth || 0;
+  const gap = 16;
+  const offset = currentSlide * (cardWidth + gap);
+  track.style.transform = `translateX(-${offset}px)`;
+
+  updateCarouselDots();
+
+  // Update progress bar
+  const featured = SYNDROMES.filter(s => s.featured);
+  const totalPages = Math.ceil(featured.length / CARDS_PER_PAGE);
+  const progress = (currentSlide / (totalPages - 1)) * 100 || 0;
+  document.getElementById('carousel-progress-bar').style.width = `${progress}%`;
+}
+
+function prevSlide() {
+  const featured = SYNDROMES.filter(s => s.featured);
+  const totalPages = Math.ceil(featured.length / CARDS_PER_PAGE);
+  if (currentSlide > 0) {
+    currentSlide--;
+    updateCarousel();
+  }
+}
+
+function nextSlide() {
+  const featured = SYNDROMES.filter(s => s.featured);
+  const totalPages = Math.ceil(featured.length / CARDS_PER_PAGE);
+  if (currentSlide < totalPages - 1) {
+    currentSlide++;
+    updateCarousel();
+  }
+}
+
+function startAutoSlide() {
+  if (autoSlideInterval) clearInterval(autoSlideInterval);
+  autoSlideInterval = setInterval(() => {
+    const featured = SYNDROMES.filter(s => s.featured);
+    const totalPages = Math.ceil(featured.length / CARDS_PER_PAGE);
+    currentSlide = (currentSlide + 1) % totalPages;
+    updateCarousel();
+  }, 5000);
+}
+
+function resetAutoSlide() {
+  startAutoSlide();
+}
+
+// Detail Modal
+function showDetailModal(syndrome) {
+  let modal = document.getElementById('syndrome-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'syndrome-modal';
+    document.body.appendChild(modal);
+  }
+
+  const v = viaTag(syndrome.via);
+  const inc = parseInc(syndrome.inc);
+  const featList = syndrome.feat.split(', ').map(f => f.trim());
+
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header ${v.cls}">
+        <span class="modal-kary">${syndrome.kar}</span>
+        <button class="modal-close" onclick="closeDetailModal()">×</button>
+        <h2 class="modal-title">${syndrome.name}</h2>
+        <p class="modal-subtitle">${syndrome.aka} · Kromosom ${syndrome.chr}</p>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-title">Insiden</div>
+          <div class="modal-inc">
+            <span class="modal-inc-num">${inc.num}</span>
+            <span class="modal-inc-label">${inc.label}<br><small style="color:var(--ink-faint)">${syndrome.inc}</small></span>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Deskripsi</div>
+          <p class="modal-desc">${syndrome.desc}</p>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Manifestasi Klinis</div>
+          <div class="modal-feat-list">
+            ${featList.map(f => `
+              <div class="modal-feat-item">
+                <span class="modal-feat-dot"></span>
+                <span>${f}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Informasi Tambahan</div>
+          <div class="modal-meta">
+            <div class="modal-meta-item">
+              <span class="modal-meta-label">Status:</span>
+              <span class="spot-badge ${v.cls}" style="font-size:0.65rem;padding:3px 8px;">${v.lbl}</span>
+            </div>
+            <div class="modal-meta-item">
+              <span class="modal-meta-label">Non-disjunction:</span>
+              <span>${syndrome.nd}</span>
+            </div>
+            <div class="modal-meta-item">
+              <span class="modal-meta-label">Pengaruh Usia:</span>
+              <span class="modal-age-tag ${ageClass(syndrome.age)}">${ageLabel(syndrome.age)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeDetailModal();
+  });
+}
+
+function closeDetailModal() {
+  const modal = document.getElementById('syndrome-modal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+// Keyboard support for modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeDetailModal();
+  if (e.key === 'ArrowLeft') { prevSlide(); resetAutoSlide(); }
+  if (e.key === 'ArrowRight') { nextSlide(); resetAutoSlide(); }
+});
 
 function renderGrid(list) {
   const el = document.getElementById('all-grid');
@@ -129,22 +372,38 @@ function renderGrid(list) {
     return;
   }
   em.style.display = 'none';
+
   el.innerHTML = list.map((s, i) => {
     const v = viaTag(s.via);
-    return `<div class="syn-card appear" style="--ac:${s.ac}; animation-delay:${Math.min(i * 0.025, 0.45)}s">
-      <div class="syn-top">
-        <span class="syn-kary">${s.kar}</span>
-        <span class="tag ${v.cls}">${v.lbl}</span>
-      </div>
-      <div class="syn-name">${s.name}</div>
-      <div class="syn-chr">Chr ${s.chr} · ${s.aka}</div>
-      <div class="syn-feat">${s.feat}</div>
-      <div class="syn-foot">
-        <span class="syn-inc">${s.inc}</span>
-        <span class="syn-age ${ageClass(s.age)}">${ageLabel(s.age)}</span>
+    const inc = parseInc(s.inc);
+    return `<div class="syn-card ${v.cls} appear" data-syndrome='${JSON.stringify(s).replace(/'/g, "&#39;")}' style="animation-delay:${Math.min(i * 0.025, 0.45)}s">
+      <div class="syn-card-inner">
+        <div class="syn-top">
+          <span class="syn-kary">${s.kar}</span>
+          <span class="syn-badge">${v.lbl}</span>
+        </div>
+        <div class="syn-name">${s.name}</div>
+        <div class="syn-chr">Chr ${s.chr} · ${s.aka}</div>
+        <div class="syn-inc">
+          <span class="syn-inc-num">${inc.num}</span>
+          <span class="syn-inc-label">insiden</span>
+        </div>
+        <div class="syn-feat">${s.feat}</div>
+        <div class="syn-foot">
+          <span class="syn-inc">${s.inc}</span>
+          <span class="syn-age ${ageClass(s.age)}">${ageLabel(s.age)}</span>
+        </div>
       </div>
     </div>`;
   }).join('');
+
+  // Add click handlers
+  document.querySelectorAll('.syn-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const data = JSON.parse(card.dataset.syndrome.replace(/&#39;/g, "'"));
+      showDetailModal(data);
+    });
+  });
 }
 
 function getFiltered() {
@@ -231,7 +490,7 @@ function renderBars() {
             display: true,
             text: 'Usia Ibu (Tahun)',
             color: '#4a6e98',
-            font: { size: 12, family: 'Inter, system-ui, sans-serif', weight: '500' },
+            font: { size: 12, family: 'GoogleSans, Inter, system-ui, sans-serif', weight: '500' },
             padding: { top: 8 },
           },
           ticks: {
@@ -256,7 +515,7 @@ function renderBars() {
             display: true,
             text: 'Risiko Aneuploidi (%)',
             color: '#4a6e98',
-            font: { size: 12, family: 'Inter, system-ui, sans-serif', weight: '500' },
+            font: { size: 12, family: 'GoogleSans, Inter, system-ui, sans-serif', weight: '500' },
             padding: { bottom: 8 },
           },
           afterBuildTicks: axis => {

@@ -4,8 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aneuploidy Risk Simulator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'GoogleSans';
+      src: url('/assets/fonts/GoogleSans-VariableFont_GRAD,opsz,wght.ttf') format('truetype');
+      font-weight: 100 700;
+      font-style: normal;
+    }
+  </style>
   <link rel="stylesheet" href="/src/styles/main.css" />
 </head>
 <body>
@@ -236,6 +242,7 @@
           <span class="vleg"><span class="vleg-dot vleg-dot--green"></span>Viable — bayi umumnya lahir hidup</span>
           <span class="vleg"><span class="vleg-dot vleg-dot--amber"></span>Jarang Viable — &gt;90% berakhir keguguran</span>
           <span class="vleg"><span class="vleg-dot vleg-dot--red"></span>Tidak Viable — tidak kompatibel dengan kehidupan</span>
+          <span class="vleg"><span class="vleg-dot vleg-dot--purple"></span>Mosaik — variabilitas tinggi</span>
         </div>
       </div>
     </div>
