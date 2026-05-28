@@ -28,10 +28,10 @@ export async function runSimulation(params) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      maternal_age:      params.maternalAge,
-      n_simulations:     params.nSimulations,
-      target_chromosome: params.targetChromosome,
-      random_seed:       params.randomSeed ?? null,
+      maternal_age:      params.maternal_age      ?? params.maternalAge,
+      n_simulations:     params.n_simulations     ?? params.nSimulations,
+      target_chromosome: params.target_chromosome ?? params.targetChromosome,
+      random_seed:       params.random_seed       ?? params.randomSeed ?? undefined,
     }),
   });
   if (!res.ok) throw new Error(`Simulation API Error ${res.status}: ${await res.text()}`);

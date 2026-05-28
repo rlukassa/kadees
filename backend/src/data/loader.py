@@ -2,64 +2,58 @@ import csv
 from typing import Dict, List
 from pathlib import Path
 
-# Path ke folder data relatif dari file ini (root proyek adalah parents[3])
+# Folder dataset mentah (relatif dari root proyek)
 DATA_RAW_DIR = Path(__file__).resolve().parents[3] / "data" / "raw"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Fallback default jika syndrome_reference.csv tidak ditemukan.
-# // diambil dari source:
-# //   OMIM (Online Mendelian Inheritance in Man): https://www.omim.org/
-# //     MIM #190685 (Trisomi 21 / Down syndrome)
-# //     MIM #601677 (Trisomi 18 / Edwards syndrome)
-# //     MIM #264480 (Trisomi 13 / Patau syndrome)
-# //     MIM #312750 (Monosomi X / Turner syndrome)
-# //   ACMG (2016). Noninvasive prenatal screening for fetal aneuploidy.
-# //   https://pubmed.ncbi.nlm.nih.gov/27467454/
-# ─────────────────────────────────────────────────────────────────────────────
+# Referensi utama:
+# - OMIM (Down, Edwards, Patau, Turner syndrome)
+# - ACMG guideline terkait fetal aneuploidy screening
 DEFAULT_SYNDROME_REFERENCE = [
     {
         "syndromeName":        "Trisomi 21 (Sindrom Down)",
         "chromosomeAffected":  "21",
         "type":                "Trisomi Autosom",
-        "aneuploidKaryotype":  "47 XX/XY +21",
+        "aneuploidKaryotype":  "47,XX,+21 / 47,XY,+21",
         "incidencePerLiveBirth": "1/700-1000",
         "viability":           "Viabel",
         "primaryNdStage":      "Meiosis I/II",
         "maternalAgeEffect":   "Sangat Kuat",
-        "clinicalFeatures":    "Disabilitas intelektual ringan-sedang; wajah khas; hipotonia",
+        "clinicalFeatures":    "Disabilitas intelektual ringan-sedang, wajah khas, hipotonia, risiko ASD, penyakit jantung kongenital 40-50%",
     },
     {
         "syndromeName":        "Trisomi 18 (Sindrom Edwards)",
         "chromosomeAffected":  "18",
         "type":                "Trisomi Autosom",
-        "aneuploidKaryotype":  "47 XX/XY +18",
-        "incidencePerLiveBirth": "1/3000-8000",
+        "aneuploidKaryotype":  "47,XX,+18 / 47,XY,+18",
+        "incidencePerLiveBirth": "1/6000-8000",
         "viability":           "Viabel (singkat)",
         "primaryNdStage":      "Meiosis I",
         "maternalAgeEffect":   "Kuat",
-        "clinicalFeatures":    "Cacat jantung berat; IUGR; tangan overlapping; kepala kecil",
+        "clinicalFeatures":    "Kelainan jantung berat, tangan overlapping, kepala kecil, IUGR, 50% meninggal dalam minggu pertama",
     },
     {
         "syndromeName":        "Trisomi 13 (Sindrom Patau)",
         "chromosomeAffected":  "13",
         "type":                "Trisomi Autosom",
-        "aneuploidKaryotype":  "47 XX/XY +13",
-        "incidencePerLiveBirth": "1/10000-16000",
+        "aneuploidKaryotype":  "47,XX,+13 / 47,XY,+13",
+        "incidencePerLiveBirth": "1/10000-20000",
         "viability":           "Viabel (singkat)",
         "primaryNdStage":      "Meiosis I",
         "maternalAgeEffect":   "Kuat",
-        "clinicalFeatures":    "Holoprosensefali; polidaktili; bibir sumbing; cacat jantung berat",
+        "clinicalFeatures":    "Kelainan jantung kongenital, holoprosensefali, polidaktili, bibir sumbing, median survival 7-10 hari",
     },
     {
         "syndromeName":        "Monosomi X (Sindrom Turner)",
         "chromosomeAffected":  "X",
         "type":                "Monosomi Seks",
         "aneuploidKaryotype":  "45,X",
-        "incidencePerLiveBirth": "1/2500 perempuan",
+        "incidencePerLiveBirth": "1/2500 kelahiran perempuan",
         "viability":           "Viabel",
         "primaryNdStage":      "Meiosis I/II",
-        "maternalAgeEffect":   "Lemah",
-        "clinicalFeatures":    "Perawakan pendek; gonadal dysgenesis; infertilitas; pterygium colli",
+        "maternalAgeEffect":   "Tidak ada",
+        "clinicalFeatures":    "Perawakan pendek, gonadal dysgenesis, infertilitas, pterygium colli, coarctasi aorta, 45-50% dengan mosaik",
     },
 ]
 

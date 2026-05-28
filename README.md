@@ -1,4 +1,4 @@
-# MeioVis 🧬
+# MeioVis 
 **Prediksi Kelainan Kromosom (Aneuploidi) akibat Kegagalan Meiosis**
 > Tugas Proyek IF3211 Domain-Specific Computation
 

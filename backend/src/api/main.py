@@ -42,7 +42,7 @@ class SimulationRequest(BaseModel):
 
     maternalAge: int = Field(
         ..., ge=15, le=49, alias="maternal_age",
-        description="Usia ibu (15–490 tahun)",
+        description="Usia ibu (15–49 tahun)",
         json_schema_extra={"example": 30},
     )
     nSimulations: int = Field(
@@ -136,7 +136,7 @@ async def runAgeSweep(
     config = SimulationConfig(nSimulations=nSim, maternalAge=ageMin)
     simulator = MeiosisMonteCarloSimulator(config, riskModel)
     sweepResults = simulator.runAgeSweep(ageRange=(ageMin, ageMax))
-    return {"sweep": sweepResults, "totalAges": len(sweepResults)}
+    return {"sweep": sweepResults, "total_ages": len(sweepResults)}
 
 
 @app.get("/api/stats/analyze", tags=["Statistics"])

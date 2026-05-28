@@ -184,9 +184,9 @@ class MeiosisMonteCarloSimulator:
             res = sim.run()
             results.append({
                 "age": age,
-                "observedRisk": res.observedRisk,
-                "modelRisk": res.modelRisk,
-                "aneuploidCount": res.aneuploidCount,
-                "totalRuns": res.totalRuns,
+                "observed_risk": res.observedRisk,
+                "model_risk": res.modelRisk,
+                "aneuploid_count": res.aneuploidCount,
+                "total_runs": res.totalRuns,
             })
         return results

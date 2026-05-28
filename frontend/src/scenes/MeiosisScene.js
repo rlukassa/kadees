@@ -192,15 +192,15 @@ export class MeiosisScene {
     this._clearScene();
     this.controls.autoRotate = false;
 
-    const hasND = simulationData.results.aneuploidCount > 0;
-    const targetChr = simulationData.config?.targetChromosome ?? 21;
-    const allSamples = simulationData.sampleGametes || [];
+    const hasND = simulationData.results.aneuploid_count > 0;
+    const targetChr = simulationData.config?.target_chromosome ?? 21;
+    const allSamples = simulationData.sample_gametes || [];
 
     // simpan kromosom yang mengalami non-disjunction
     const ndSet    = new Set();
     const ndMIISet = new Set();
     allSamples.forEach(g => {
-      (g.affectedChromosomes || []).forEach(c => {
+      (g.affected_chromosomes || []).forEach(c => {
         ndSet.add(c.number);
         if (c.state === 'nd_mII') ndMIISet.add(c.number);
       });
@@ -323,8 +323,8 @@ export class MeiosisScene {
   // menampilkan gamete hasil meiosis
   _showGametes(simData) {
     this._clearScene();
-    const targetChr     = simData.config?.targetChromosome ?? 21;
-    const sampleGametes = simData.sampleGametes || [];
+    const targetChr     = simData.config?.target_chromosome ?? 21;
+    const sampleGametes = simData.sample_gametes || [];
     const aneuploidItems = sampleGametes.map(g => ({ isAneuploid: true, gamete: g }));
     const normalCount    = Math.max(1, 8 - aneuploidItems.length);
     const items = [
@@ -340,7 +340,7 @@ export class MeiosisScene {
       // menentukan warna gamete berdasarkan kondisi kromosom
       let color = COLORS.gamet;
       if (item.isAneuploid && item.gamete) {
-        const affected  = item.gamete.affectedChromosomes || [];
+        const affected  = item.gamete.affected_chromosomes || [];
         const targetHit = affected.some(c => c.number === targetChr);
         const hasMII    = affected.some(c => c.state === 'nd_mII');
         if (targetHit)   color = COLORS.gametNdTarget;

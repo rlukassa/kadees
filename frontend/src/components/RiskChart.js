@@ -10,8 +10,8 @@ export function createRiskCurveChart(canvasId, curveData, currentAge = 30) {
   const existing = Chart.getChart(canvas);
   if (existing) existing.destroy();
 
-  const ages  = curveData.map(d => d.maternalAge);
-  const risks = curveData.map(d => d.totalRiskPercent);
+  const ages  = curveData.map(d => d.maternal_age      ?? d.maternalAge);
+  const risks = curveData.map(d => d.total_risk_percent ?? d.totalRiskPercent);
 
   // warna gradient berdasarkan nilai risiko
   const ctx = canvas.getContext('2d');
