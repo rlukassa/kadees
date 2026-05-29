@@ -1,6 +1,10 @@
-# MeioVis 
-**Prediksi Kelainan Kromosom (Aneuploidi) akibat Kegagalan Meiosis**
+# Simulasi Monte Carlo Non-Disjunction pada Meiosis untuk Prediksi Risiko Aneuploidi Berdasarkan Usia Maternal
+
 > Tugas Proyek IF3211 Domain-Specific Computation
+
+## Tentang Proyek
+
+MeioVis adalah aplikasi visualisasi dan simulasi risiko aneuploidi yang memprediksi kemungkinan kelainan kromosom akibat kegagalan meiosis berdasarkan usia maternal menggunakan pendekatan probabilistik dan simulasi Monte Carlo.
 
 ---
 
